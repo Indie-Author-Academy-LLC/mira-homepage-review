@@ -1128,6 +1128,7 @@
       .story-actions { display: flex; }
     }
   </style>
+  <link rel="stylesheet" href="assets/cinematic/mira-cinematic.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -1200,6 +1201,7 @@
         </div>
 
         <div class="cinema-world" aria-hidden="true">
+          <div class="cinematic-media" data-cinematic-media></div>
           <div class="world-shell">
             <div class="world-floor"></div>
 
@@ -1753,5 +1755,6 @@
       addEventListener('keydown', (event) => { if (event.key === 'Escape') { if (authShell.classList.contains('open')) closeAuth(); if (reviewShell.classList.contains('open')) closeReview(); } });
     })();
   </script>
+  <script src="assets/cinematic/mira-cinematic.js"></script>
 </body>
 </html>
