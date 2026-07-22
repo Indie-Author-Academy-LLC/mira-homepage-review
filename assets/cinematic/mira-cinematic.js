@@ -9,7 +9,7 @@
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const coarse = matchMedia('(hover: none) and (pointer: coarse)').matches;
   const smallViewport = matchMedia('(max-width: 860px)');
-  const phoneClass = Math.min(screen.width, screen.height, innerWidth, innerHeight) <= 600;
+  const phoneClass = innerWidth <= 860;
   const connection = navigator.connection;
   const saveData = Boolean(connection && connection.saveData);
   const stillsOnly = reduceMotion || saveData;

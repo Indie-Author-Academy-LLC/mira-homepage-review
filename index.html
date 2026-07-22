@@ -722,6 +722,7 @@
       line-height: 1.58;
     }
     .story-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.55rem; }
+    .hero-acronym { margin-top: 1rem; color: #88847c; font: 700 .58rem/1.45 var(--mono); letter-spacing: .08em; }
     .story-trust { display: flex; flex-wrap: wrap; gap: .55rem 1.2rem; margin-top: 1.1rem; color: #88847c; font: 650 .65rem/1.45 var(--mono); }
     .story-trust span { display: inline-flex; align-items: center; gap: .42rem; }
     .story-trust span::before { content: ""; width: .32rem; aspect-ratio: 1; border-radius: 50%; background: var(--orange); }
@@ -1079,12 +1080,24 @@
     .cinematic[data-story-stage="3"] .bucket-play { color: #0c3e18; border-color: #0c3e18; background: #8fcb99; }
     .cinematic[data-story-stage="3"] .bucket-play svg { transform: rotate(90deg); }
 
+    .plain-detail { margin-top: 1.25rem; border-top: 1px solid currentColor; color: inherit; }
+    .plain-detail summary { display: flex; justify-content: space-between; gap: 1rem; padding: 1rem 0; font: 700 .68rem/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; list-style: none; }
+    .plain-detail summary::-webkit-details-marker { display: none; }
+    .plain-detail summary::after { content: '+'; font-size: 1rem; line-height: .7; }
+    .plain-detail[open] summary::after { content: '−'; }
+    .plain-detail p { max-width: 42rem; padding: 0 0 1.15rem; font-size: .9rem; line-height: 1.65; opacity: .76; }
+    .compact-proof { margin-top: 2.5rem; border-radius: 1.2rem; }
+    .compact-questions { display: grid; grid-template-columns: minmax(15rem,.65fr) minmax(22rem,1.35fr); gap: 4rem; margin-top: 5rem; padding-top: 4rem; border-top: 1px solid var(--line); }
+    .compact-questions h3 { max-width: 9ch; margin-top: .75rem; font-size: clamp(2.3rem,4vw,4.5rem); line-height: .94; letter-spacing: -.055em; }
+    .compact-question-list .plain-detail:first-child { margin-top: 0; }
+
     @media (max-width: 1080px) {
       .cinema-sticky { grid-template-columns: minmax(22rem,.9fr) minmax(30rem,1.1fr); }
       .cinema-world { transform: translateX(8vw) scale(.9); transform-origin: 50% 50%; }
       .story-beat h1,.story-beat h2 { font-size: clamp(3.3rem,6.2vw,6rem); }
     }
     @media (max-width: 800px) {
+      .compact-questions { grid-template-columns: 1fr; gap: 2rem; margin-top: 3rem; padding-top: 3rem; }
       .cinematic { height: 450svh; }
       .cinema-sticky { grid-template-columns: 1fr; grid-template-rows: 43% 57%; min-height: 38rem; padding: 5.3rem 1.1rem 1rem; }
       .story-copy { grid-row: 2; min-height: 0; }
@@ -1122,7 +1135,8 @@
       .cinema-world,.story-rail,.scroll-note { display: none; }
       .story-copy { min-height: 0; }
       .story-identity { position: static; margin-bottom: 3rem; }
-      .story-beat { position: static; width: 100%; opacity: 1; pointer-events: auto; transform: none; padding: 2.5rem 0; border-top: 1px solid var(--line-light); }
+      .story-beat,
+      .cinematic[data-story-stage] .story-beat[data-beat] { position: static; width: 100%; opacity: 1; pointer-events: auto; transform: none; padding: 2.5rem 0; border-top: 1px solid var(--line-light); }
       .story-beat:first-of-type { border-top: 0; }
       .story-beat h1,.story-beat h2 { max-width: 11ch; }
       .story-actions { display: flex; }
@@ -1144,7 +1158,7 @@
     </nav>
     <div class="header-actions">
       <button class="text-button" type="button" data-open-auth="signin">Sign in</button>
-      <button class="button button-primary" type="button" data-open-auth="signup">Create free account</button>
+      <button class="button button-primary" type="button" data-open-auth="signup">Start free</button>
     </div>
   </header>
 
@@ -1158,37 +1172,37 @@
           </div>
 
           <article class="story-beat" data-beat="0">
-            <span class="beat-index">01 · START WITH WHAT YOU HAVE</span>
-            <h1>Keep your book showing up on TikTok—<span>without making TikTok your job.</span></h1>
-            <p>Start with a book, one scene, or finished content you already have. MIRA helps create only what is missing.</p>
+            <span class="beat-index">01 · START ANYWHERE</span>
+            <h1>Your next reader is scrolling. <span>MIRA keeps your book showing up.</span></h1>
+            <p>Bring finished content or start with a scene. MIRA turns it into a TikTok campaign—and keeps it running while you write.</p>
             <div class="story-actions">
-              <button class="button button-primary" type="button" data-open-auth="signup">Create free account</button>
-              <a class="button button-outline" href="#how">See what a Bucket needs</a>
+              <button class="button button-primary" type="button" data-open-auth="signup">Create my first campaign</button>
+              <a class="button button-outline" href="#how">See what goes in</a>
             </div>
-            <div class="story-trust"><span>Bring your own content</span><span>Use your own accounts</span><span>Pause any time</span></div>
+            <div class="hero-acronym">MIRA · MARKETING INDIE RESOURCE ACCELERATOR</div>
           </article>
 
           <article class="story-beat" data-beat="1">
-            <span class="beat-index">02 · BUILD THE CONTENT</span>
-            <h2>Bring every piece. <span>Create the missing pieces.</span></h2>
-            <p>Each post needs a visual, on-screen text, a caption, and optional hashtags. Bring yours—or use a scene in MIRA. Booketeer is the optional whole-manuscript path.</p>
-            <div class="story-trust"><span>No indexed book required</span><span>Generation is optional</span><span>Videos are bring-your-own</span></div>
+            <span class="beat-index">02 · MAKE THE POST</span>
+            <h2>Bring it finished. <span>Or make what’s missing.</span></h2>
+            <p>Text. Visual. Caption. Hashtags. Use your own—or let one scene, or optional Booketeer, give MIRA the story material.</p>
+            <div class="story-trust"><span>No indexed book required</span><span>Generation is optional</span></div>
           </article>
 
           <article class="story-beat" data-beat="2">
             <span class="beat-index">03 · DIRECT THE BUCKET</span>
             <h2>Choose the posts, accounts, <span>and schedule.</span></h2>
-            <p>Connect the TikTok accounts you own, approve the content and posting rhythm, then choose Direct Post or Draft. Nothing publishes until you press Start.</p>
-            <div class="story-trust"><span>Only approved content</span><span>Your accounts</span><span>Your schedule</span></div>
+            <p>Use accounts you own. Choose Direct Post or Draft. Nothing runs until you press play.</p>
+            <div class="story-trust"><span>Your content</span><span>Your accounts</span><span>Your control</span></div>
           </article>
 
           <article class="story-beat" data-beat="3">
-            <span class="beat-index">04 · PRESS PLAY</span>
-            <h2>MIRA keeps posting. <span>You keep writing.</span></h2>
-            <p>The Bucket varies only approved ingredients and posts on schedule. See what readers do—views, saves, follows, and book clicks—then pause, resume, or stop whenever you want.</p>
+            <span class="beat-index">04 · KEEP WRITING</span>
+            <h2>Press play. <span>MIRA keeps the campaign moving.</span></h2>
+            <p>Your approved posts go out on schedule. Pause, change, or stop the Bucket any time.</p>
             <div class="story-actions">
-              <button class="button button-primary" type="button" data-open-auth="signup">Start free</button>
-              <a class="button button-outline" href="#buckets">See the Bucket controls</a>
+              <button class="button button-primary" type="button" data-open-auth="signup">Create my first campaign</button>
+              <a class="button button-outline" href="#buckets">See the Bucket</a>
             </div>
           </article>
 
@@ -1262,47 +1276,49 @@
 
     <section class="needs-section" id="how" aria-label="What a MIRA Bucket needs">
       <div class="needs-intro">
-        <div><div class="label">The whole system</div><h2>A Bucket needs only two things.</h2></div>
-        <p>Content tells MIRA what it may post. TikTok accounts tell MIRA where it may post. Put both into a Bucket, choose the rhythm, and MIRA becomes the content engine and admin desk for your book marketing.</p>
+        <div><div class="label">Content engine + campaign admin</div><h2>Two inputs. One running campaign.</h2></div>
+        <p>MIRA can make what is missing. The Bucket organizes what you approve, posts to the accounts you choose, and follows your schedule.</p>
       </div>
       <div class="needs-flow">
         <article class="need">
           <span class="need-index">01 · CONTENT</span>
-          <h3>The post ingredients.</h3>
-          <p>Bring them finished, make them in MIRA, or mix both.</p>
+          <h3>Bring it—or make it here.</h3>
+          <p>A complete post has four ingredients.</p>
           <div class="ingredient-list">
-            <div class="ingredient"><b>A</b><span>On-screen text<small>The hook and story words readers see in the post</small></span></div>
-            <div class="ingredient"><b>B</b><span>Background<small>A still image or a short video</small></span></div>
-            <div class="ingredient"><b>C</b><span>Caption<small>The description that accompanies the TikTok post</small></span></div>
-            <div class="ingredient"><b>D</b><span>Hashtags and style<small>Your tag pool, font, color, box, and position</small></span></div>
+            <div class="ingredient"><b>TXT</b><span>On-screen text<small>The story words readers see</small></span></div>
+            <div class="ingredient"><b>VIS</b><span>Image or video<small>The background behind those words</small></span></div>
+            <div class="ingredient"><b>CAP</b><span>Caption<small>The copy that travels with the post</small></span></div>
+            <div class="ingredient"><b>TAG</b><span>Hashtags + style<small>The tags, type, color, and position</small></span></div>
           </div>
+          <details class="plain-detail"><summary>Where does Booketeer fit?</summary><p>One scene can start MIRA. Or Booketeer can read the whole manuscript and surface strong scenes first. MIRA turns either source into assets. Booketeer is optional; an indexed book is not required.</p></details>
         </article>
         <div class="need-divider" aria-hidden="true"></div>
         <article class="need">
-          <span class="need-index">02 · ACCOUNTS</span>
-          <h3>The places it posts.</h3>
-          <p>Connect one or more TikTok accounts you already own. Buying or renting an account from MIRA is not required.</p>
+          <span class="need-index">02 · TIKTOK ACCOUNTS</span>
+          <h3>Connect the ones you own.</h3>
+          <p>You never have to buy or rent an account from MIRA.</p>
           <div class="ingredient-list">
-            <div class="ingredient"><b>A</b><span>Choose the accounts<small>The Bucket posts only to the handles you select</small></span></div>
-            <div class="ingredient"><b>B</b><span>Choose the cadence<small>Posts per day, exact times, and how long to run</small></span></div>
-            <div class="ingredient"><b>C</b><span>Choose the landing<small>Publish automatically or send to TikTok Draft</small></span></div>
+            <div class="ingredient"><b>ACC</b><span>Choose the accounts<small>Only the handles you connect</small></span></div>
+            <div class="ingredient"><b>CAL</b><span>Set the rhythm<small>Times, frequency, and run length</small></span></div>
+            <div class="ingredient"><b>OUT</b><span>Direct Post or Draft<small>Autopilot, or a final review in TikTok</small></span></div>
           </div>
+          <details class="plain-detail"><summary>Are managed accounts required?</summary><p>No. Optional managed accounts may be offered separately where available. They are never required to create content or run a Bucket.</p></details>
         </article>
         <div class="need-divider" aria-hidden="true"></div>
         <article class="need outcome">
-          <span class="need-index">RESULT · BUCKET</span>
-          <h3>Approved variety, on schedule.</h3>
-          <p>MIRA pairs approved text with approved backgrounds, varies captions and hashtags, and follows the exact schedule you set.</p>
+          <span class="need-index">03 · BUCKET</span>
+          <h3>Approve. Schedule. Press play.</h3>
+          <p>The Bucket pairs only approved ingredients and sends them only where you choose.</p>
           <div class="ingredient-list">
-            <div class="ingredient"><b>01</b><span>Stock the pools<small>Your text decks and your backgrounds</small></span></div>
-            <div class="ingredient"><b>02</b><span>Preview the runway<small>See how much variety and time you have</small></span></div>
-            <div class="ingredient"><b>03</b><span>Turn it on<small>Pause, resume, or stop whenever you want</small></span></div>
+            <div class="ingredient"><b>CHK</b><span>Review the runway<small>See what can post before it runs</small></span></div>
+            <div class="ingredient"><b>PLY</b><span>Start the campaign<small>MIRA handles the daily posting</small></span></div>
+            <div class="ingredient"><b>CTL</b><span>Stay in control<small>Pause, change, or stop any time</small></span></div>
           </div>
         </article>
       </div>
     </section>
 
-    <section class="section source-section" id="content">
+    <section class="section source-section" id="content" hidden>
       <div class="section-head">
         <div><div class="label">Content, your way</div><h2 class="section-title">Start with what you already have.</h2></div>
         <p class="section-lede">An indexed book is never required. Use finished assets, start with one scene, or let Booketeer map the whole manuscript. All three paths lead to the same place: approved content ready for a Bucket.</p>
@@ -1335,15 +1351,15 @@
 
     <section class="section bucket-section" id="buckets">
       <div class="section-head">
-        <div><div class="label">The autopilot</div><h2 class="section-title">Stock it once. Set the rhythm.</h2></div>
-        <p class="section-lede">A Bucket is the goal: two approved pools—on-screen text and backgrounds—plus your accounts and schedule. MIRA combines the pools for variety and keeps posting until you pause, stop, or reach the end.</p>
+        <div><div class="label">The autopilot</div><h2 class="section-title">This is the Bucket.</h2></div>
+        <p class="section-lede">Approved content in. Scheduled posts out. You choose every ingredient, account, and time.</p>
       </div>
 
       <div class="bucket-workspace" data-testid="bucket-workspace">
         <div class="bucket-copy">
           <div class="workspace-top"><span>A VOW IN WINTER</span><span class="status" data-bucket-status>RUNNING</span></div>
           <h3>Launch week</h3>
-          <p>Every ingredient below was approved before launch. MIRA varies the combinations; your schedule controls what publishes.</p>
+          <p>MIRA varies only what you approved.</p>
           <div class="approved-list">
             <div class="approved-row"><b>TXT</b><strong>12 on-screen text decks</strong><small>POOL A</small></div>
             <div class="approved-row"><b>BG</b><strong>8 image and video backgrounds</strong><small>POOL B</small></div>
@@ -1371,7 +1387,7 @@
       </div>
     </section>
 
-    <section class="section hub-section">
+    <section class="section hub-section" hidden>
       <div class="section-head">
         <div><div class="label">Content engine + admin desk</div><h2 class="section-title">Make it. Organize it. Run it.</h2></div>
         <p class="section-lede">MIRA is where the creative ingredients and the daily administration meet: assets, Buckets, calendars, accounts, publishing, and results in one place.</p>
@@ -1395,7 +1411,7 @@
       </div>
     </section>
 
-    <section class="section control-section">
+    <section class="section control-section" hidden>
       <div class="control-grid">
         <div class="control-copy">
           <div class="label">You stay in control</div>
@@ -1415,7 +1431,7 @@
       </div>
     </section>
 
-    <section class="section proof-section">
+    <section class="section proof-section" hidden>
       <div class="proof-grid">
         <div class="proof-meta">CURRENT OPERATOR EXAMPLE<br>INDIVIDUAL RESULT</div>
         <div><blockquote class="proof-quote">“MIRA keeps the campaign moving so I can focus on writing the next book.”</blockquote><p class="proof-note">One expanded operator setup reported 100K+ daily TikTok views and a Top 1,000 Kindle rank. This is an individual result, not a guarantee. Standard self-serve plans use lower account limits.</p></div>
@@ -1424,8 +1440,8 @@
 
     <section class="section plans-section" id="plans">
       <div class="section-head">
-        <div><div class="label">No bundled surprises</div><h2 class="section-title">Pay for the parts you choose.</h2></div>
-        <p class="section-lede">The monthly MIRA plan, optional content generation, optional Booketeer indexing, and optional managed accounts are separate. Bringing your own content and accounts is always allowed.</p>
+        <div><div class="label">Plans + plain answers</div><h2 class="section-title">Choose only what you need.</h2></div>
+        <p class="section-lede">MIRA is the software. Generation, Booketeer, extra account slots, and optional managed accounts are separate. Your own content and accounts are always welcome.</p>
       </div>
       <div class="plans">
         <article class="plan"><div><h3>Free</h3><span class="plan-price">$0</span></div><p class="plan-copy">Try the content tools and connect <span>1 TikTok account you own</span>. Buckets require a paid plan.</p><button class="button button-outline" type="button" data-open-auth="signup">Create free account</button></article>
@@ -1433,13 +1449,26 @@
         <article class="plan"><div><h3>Studio</h3><span class="plan-price">$59 / MONTH</span></div><p class="plan-copy">Connect <span>up to 20 accounts you own</span> and run up to 5 Buckets.</p><button class="button button-outline" type="button" data-open-auth="signup">Choose Studio</button></article>
       </div>
       <div class="price-clarity">
-        <article class="price-extra"><small>BRING YOUR OWN</small><strong>$0 generation credits</strong><p>Write or import a manual text deck and upload your own images or videos without spending a generation credit.</p></article>
-        <article class="price-extra"><small>CREATE IN MIRA</small><strong>1 credit per generated asset</strong><p>Generating one slide deck or one image uses one credit. MIRA does not generate raw videos.</p></article>
-        <article class="price-extra"><small>BOOKETEER · OPTIONAL</small><strong>$49–$99 once per book</strong><p>A separate whole-manuscript indexing purchase. The exact price depends on your plan and eligibility and is shown before upload.</p></article>
+        <article class="price-extra"><small>BRING YOUR OWN</small><strong>No generation charge</strong><p>Import text and upload images or videos.</p></article>
+        <article class="price-extra"><small>CREATE IN MIRA</small><strong>Uses generation credits</strong><p>Generate slide decks or images. Raw videos are uploaded by you.</p></article>
+        <article class="price-extra"><small>BOOKETEER · OPTIONAL</small><strong>Separate, once per book</strong><p>The exact price is shown before manuscript upload.</p></article>
+      </div>
+      <div class="proof-grid compact-proof">
+        <div class="proof-meta">ONE OPERATOR EXAMPLE<br>NOT A GUARANTEE</div>
+        <div><blockquote class="proof-quote">100K+ daily TikTok views. Top 1,000 on Kindle.</blockquote><p class="proof-note">An expanded real-world setup reported this result after one week. Results vary; standard plans have lower account limits.</p></div>
+      </div>
+      <div class="compact-questions" id="faq">
+        <div><div class="label">Before you ask</div><h3>The four short answers.</h3></div>
+        <div class="compact-question-list">
+          <details class="plain-detail"><summary>Do I need an indexed book?</summary><p>No. Bring finished content or paste one scene. Booketeer is the optional whole-manuscript path.</p></details>
+          <details class="plain-detail"><summary>Must I generate content in MIRA?</summary><p>No. Bring your on-screen text, images or videos, captions, and hashtags. MIRA can simply organize and run them.</p></details>
+          <details class="plain-detail"><summary>Must I buy or rent TikTok accounts?</summary><p>No. Connect accounts you already own. Managed accounts, when offered, are optional.</p></details>
+          <details class="plain-detail"><summary>What does autopilot mean?</summary><p>The Bucket follows your approved content, accounts, schedule, and delivery mode. Pause, change, or stop it any time.</p></details>
+        </div>
       </div>
     </section>
 
-    <section class="section faq-section" id="faq">
+    <section class="section faq-section" hidden>
       <div class="faq-layout">
         <div><div class="label">Plain answers</div><h2>No more guessing what MIRA means.</h2></div>
         <div class="faq-list">
@@ -1455,7 +1484,7 @@
     </section>
 
     <section class="final">
-      <div class="final-inner"><h2>Bring it or make it. <span>Then let the Bucket run it.</span></h2><p>Start with one finished post, one scene, or one manuscript. Connect one account. MIRA will show you the shortest path to a running campaign.</p><button class="button button-primary" type="button" data-open-auth="signup">Create free account</button></div>
+      <div class="final-inner"><h2>Your book deserves to keep showing up. <span>You deserve to keep writing.</span></h2><p>Start with one post, one scene, and one account.</p><button class="button button-primary" type="button" data-open-auth="signup">Create my first campaign</button></div>
     </section>
   </main>
 
@@ -1477,7 +1506,7 @@
     <button class="modal-backdrop" type="button" data-close-review aria-label="Close prototype notes"></button>
     <section class="auth-modal review-dialog" role="dialog" aria-modal="true" aria-labelledby="review-title">
       <div class="modal-top"><span class="brand"><span class="mark" aria-hidden="true">MIR</span><span>MIRA</span></span><button class="modal-close" type="button" data-close-review aria-label="Close"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button></div>
-      <div class="review-body"><h2 id="review-title">Prototype notes</h2><h3>The corrected product model</h3><p>The page now starts with the actual outcome: a running Bucket. It defines the two requirements—content and TikTok accounts—before introducing optional tools. Booketeer sits inside the “I need content” path because it finds and structures manuscript material; MIRA creates and stores assets, runs Buckets, publishes, and measures.</p><h3>Bring-your-own is first-class</h3><p>Authors can write or import on-screen text, upload images and videos, provide captions and hashtags, and connect accounts they already own. Generation, Booketeer, and managed accounts are optional and priced separately.</p><h3>The corrected customer journey</h3><p>Primary homepage actions open Create account. Sign in is reserved for returning authors. If a new author uses Sign in anyway, the prototype explains why no link arrived and carries the email directly into account creation.</p><h3>Production security decision</h3><p>An unauthenticated “no account found” response can reveal which emails use MIRA. The safest production flow is one neutral “Continue with email” action that sends either a sign-in or creation link while showing the same browser response. This prototype demonstrates Sebastian’s requested explicit state so the team can evaluate the experience.</p></div>
+      <div class="review-body"><h2 id="review-title">Prototype notes</h2><h3>One message, five sections</h3><p>The homepage now leads with reader discovery, then answers only four product questions: what content goes in, how Booketeer fits, which accounts are needed, and what the Bucket controls. Repeated explanations were removed.</p><h3>A causal film</h3><p>The same recognizable post is assembled from story material, physically loaded into the Bucket, connected to destinations and a schedule, then released only after play is pressed. The final state returns to the author writing.</p><h3>Bring-your-own is first-class</h3><p>Authors can import on-screen text, upload images and videos, provide captions and hashtags, and connect accounts they already own. Generation, Booketeer, and managed accounts remain optional.</p><h3>The corrected sign-in path</h3><p>If a new author chooses Sign in, the prototype explicitly says no account exists and no email was sent, then carries the address into account creation. Production should preserve the clarity while evaluating account-enumeration risk.</p></div>
     </section>
   </div>
 

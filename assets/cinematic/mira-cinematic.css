@@ -79,42 +79,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .cinematic .cinema-world {
-    display: block;
-    width: 100%;
-    height: auto;
-    min-height: 0;
-    margin-top: 2rem;
-    transform: none;
-  }
-
-  .cinematic-media {
-    position: relative;
-    inset: auto;
-    display: grid;
-    gap: 1rem;
-    overflow: visible;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-    background: transparent;
-  }
-
-  .cinematic-media__segment,
-  .cinematic-media__segment.is-visible {
-    position: relative;
-    inset: auto;
-    min-height: min(56vw, 34rem);
-    overflow: hidden;
-    border: 1px solid rgba(242, 236, 223, .13);
-    border-radius: 1.2rem;
-    opacity: 1;
-  }
-
-  .cinematic-media__video {
     display: none;
   }
 
-  .cinematic-media__still {
-    transform: none;
+  .cinematic-media {
+    display: none;
   }
 }
