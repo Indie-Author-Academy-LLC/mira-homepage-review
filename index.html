@@ -1,0 +1,1757 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0b09">
+  <title>MIRA — Direct your TikTok without living in TikTok</title>
+  <meta name="description" content="Write the book. Bring or create the content. Start a MIRA Bucket, and keep your approved TikTok campaign moving while you keep writing.">
+  <style>
+    :root {
+      --ink: #0b0b09;
+      --ink-soft: #151511;
+      --paper: #f2ecdf;
+      --paper-soft: #e5ddcf;
+      --muted: #8f8b83;
+      --muted-dark: #625d55;
+      --orange: #e9602b;
+      --orange-deep: #c94719;
+      --green: #4d8b5a;
+      --red: #b94d3a;
+      --line-dark: rgba(11, 11, 9, .16);
+      --line-light: rgba(242, 236, 223, .16);
+      --page: clamp(1.2rem, 4vw, 4.5rem);
+      --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--ink); }
+    body {
+      margin: 0;
+      color: var(--paper);
+      background: var(--ink);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: clip;
+    }
+    body.modal-open { overflow: hidden; }
+    button, input { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { color: inherit; }
+    a { color: inherit; }
+    ::selection { color: var(--ink); background: var(--orange); }
+    :focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+    .skip-link {
+      position: fixed;
+      left: 1rem;
+      top: -5rem;
+      z-index: 200;
+      padding: .8rem 1rem;
+      border-radius: .5rem;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    .skip-link:focus { top: 1rem; }
+
+    .progress {
+      position: fixed;
+      inset: 0 auto auto 0;
+      z-index: 120;
+      width: calc(var(--scroll, 0) * 100%);
+      height: 2px;
+      background: var(--orange);
+    }
+
+    .header {
+      position: absolute;
+      inset: 0 0 auto;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      min-height: 5.5rem;
+      padding-inline: var(--page);
+      border-bottom: 1px solid var(--line-light);
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: .7rem;
+      width: max-content;
+      border: 0;
+      padding: 0;
+      text-decoration: none;
+      background: transparent;
+      font-weight: 850;
+      letter-spacing: -.04em;
+    }
+    .mark {
+      display: grid;
+      place-items: center;
+      width: 1.9rem;
+      aspect-ratio: 1;
+      border: 1px solid rgba(233, 96, 43, .72);
+      border-radius: .5rem;
+      color: var(--orange);
+      font: 800 .63rem/1 var(--mono);
+      transform: rotate(-6deg);
+    }
+    .nav { display: flex; align-items: center; gap: 1.8rem; }
+    .nav a { color: #b9b4aa; text-decoration: none; font-size: .88rem; }
+    .nav a:hover { color: var(--paper); }
+    .header-actions { display: flex; justify-content: flex-end; align-items: center; gap: .7rem; }
+
+    .text-button {
+      border: 0;
+      padding: .7rem .4rem;
+      color: #c9c3b8;
+      background: transparent;
+      font-size: .88rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .text-button:hover { color: var(--paper); }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .55rem;
+      min-height: 3rem;
+      padding: .75rem 1.15rem;
+      border: 1px solid transparent;
+      border-radius: .65rem;
+      text-decoration: none;
+      font-size: .9rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease, border-color .2s ease;
+    }
+    .button:hover { transform: translateY(-1px); }
+    .button-primary { color: #1b0c06; background: var(--orange); }
+    .button-primary:hover { background: #ef7444; }
+    .button-dark { color: var(--paper); background: var(--ink); }
+    .button-outline { border-color: var(--line-light); color: var(--paper); background: transparent; }
+    .button-outline:hover { border-color: rgba(242,236,223,.38); }
+    .button-paper { border-color: var(--line-dark); color: var(--ink); background: transparent; }
+    .button-paper:hover { border-color: rgba(11,11,9,.42); }
+    .button:disabled { opacity: .42; transform: none; cursor: not-allowed; }
+
+    .label {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      color: var(--orange);
+      font: 750 .68rem/1.2 var(--mono);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .label::before { content: ""; width: 1.8rem; height: 1px; background: currentColor; }
+
+    .hero {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, .92fr) minmax(34rem, 1.08fr);
+      align-items: center;
+      min-height: max(720px, 100svh);
+      padding: 8.5rem var(--page) 4rem;
+      overflow: hidden;
+      border-bottom: 1px solid var(--line-light);
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .24;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(242,236,223,.035) 1px, transparent 1px), linear-gradient(90deg,rgba(242,236,223,.035) 1px,transparent 1px);
+      background-size: 5rem 5rem;
+      mask-image: linear-gradient(90deg,transparent,black 54%,transparent);
+    }
+    .hero-copy { position: relative; z-index: 2; max-width: 46rem; }
+    .hero-identity {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: .55rem .85rem;
+    }
+    .hero-identity .label { margin: 0; }
+    .hero-name {
+      font: 600 .67rem/1.35 var(--mono);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(245,239,229,.54);
+    }
+    .hero-name::before { content: "/"; margin-right: .85rem; color: var(--orange); }
+    .hero h1 {
+      max-width: 10ch;
+      margin: 1.3rem 0 0;
+      font-size: clamp(4rem, 7.15vw, 8.2rem);
+      line-height: .87;
+      letter-spacing: -.075em;
+      text-wrap: balance;
+    }
+    .hero h1 span { color: var(--orange); }
+    .hero-copy > p {
+      max-width: 39rem;
+      margin: 1.8rem 0 0;
+      color: #b8b2a8;
+      font-size: clamp(1.04rem, 1.4vw, 1.22rem);
+      line-height: 1.58;
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.8rem; }
+    .trust { display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; margin-top: 1.25rem; color: #88847c; font: 650 .68rem/1.45 var(--mono); }
+    .trust span { display: inline-flex; align-items: center; gap: .45rem; }
+    .trust span::before { content: ""; width: .34rem; aspect-ratio: 1; border-radius: 50%; background: var(--orange); }
+
+    .hero-scene {
+      position: relative;
+      z-index: 1;
+      height: min(65vw, 43rem);
+      min-height: 38rem;
+      perspective: 1300px;
+    }
+    .scene {
+      position: absolute;
+      inset: 8% -2% 0 4%;
+      transform-style: preserve-3d;
+      transform: rotateX(calc(58deg - var(--scroll, 0) * 5deg)) rotateZ(-26deg) rotateY(calc(-5deg + var(--scroll, 0) * 8deg));
+      transition: transform .08s linear;
+    }
+    .book {
+      position: absolute;
+      left: 7%;
+      top: 30%;
+      width: clamp(11rem, 17vw, 16rem);
+      aspect-ratio: .7;
+      transform-style: preserve-3d;
+      transform: translateZ(7rem);
+    }
+    .book::before, .book::after {
+      content: "";
+      position: absolute;
+      inset: .65rem -.5rem -.75rem .8rem;
+      border: 1px solid #9d9688;
+      border-radius: .2rem .8rem .8rem .2rem;
+      background: repeating-linear-gradient(90deg,#d6cfc2 0 2px,#f4efe6 2px 7px);
+      transform: translateZ(-1.2rem);
+    }
+    .book::after { inset: 1.2rem -.75rem -1.15rem 1.25rem; opacity: .62; transform: translateZ(-2.1rem); }
+    .cover {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.3rem;
+      border: 1px solid rgba(242,236,223,.26);
+      border-radius: .2rem .8rem .8rem .2rem;
+      background: linear-gradient(150deg, transparent 38%, rgba(233,96,43,.18) 38% 63%, transparent 63%), #171713;
+      box-shadow: -1rem 2rem 4rem rgba(0,0,0,.5), inset 1.1rem 0 rgba(255,255,255,.025);
+    }
+    .cover small { color: var(--orange); font: 700 .58rem/1 var(--mono); letter-spacing: .12em; }
+    .cover strong { font-size: clamp(1.4rem, 2.2vw, 2.15rem); line-height: .94; letter-spacing: -.05em; }
+    .cover span { color: #a9a49a; font: 650 .57rem/1 var(--mono); letter-spacing: .1em; }
+    .posts { position: absolute; left: 38%; top: 12%; width: 24rem; height: 28rem; transform-style: preserve-3d; }
+    .post {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 10.4rem;
+      aspect-ratio: 9/16;
+      padding: .85rem;
+      border: 1px solid rgba(242,236,223,.25);
+      border-radius: .75rem;
+      background: #171713;
+      box-shadow: 0 2rem 4rem rgba(0,0,0,.35);
+    }
+    .post small { color: var(--orange); font: 700 .53rem/1 var(--mono); }
+    .post strong { font-size: .86rem; line-height: 1.18; }
+    .post i { display: block; width: 65%; height: .28rem; border-radius: 9px; background: var(--line-light); box-shadow: 0 .7rem var(--line-light); }
+    .post:nth-child(1) { transform: translate3d(0,2.5rem,7rem) rotateZ(3deg); }
+    .post:nth-child(2) { transform: translate3d(4.2rem,1rem,2rem) rotateZ(8deg); }
+    .post:nth-child(3) { transform: translate3d(8.1rem,0,-3rem) rotateZ(13deg); }
+    .rail {
+      position: absolute;
+      left: 59%;
+      top: 54%;
+      width: 46%;
+      height: 2px;
+      background: linear-gradient(90deg,var(--orange),rgba(233,96,43,.08));
+      transform: translateZ(2rem);
+    }
+    .rail::before { content: "BUCKET SCHEDULE"; position: absolute; top: -1.6rem; color: var(--orange); font: 700 .54rem/1 var(--mono); letter-spacing: .1em; }
+    .rail i { position: absolute; top: -.38rem; width: .8rem; aspect-ratio: 1; border: 2px solid var(--ink); border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 1px var(--orange); }
+    .rail i:nth-child(1) { left: 15%; }
+    .rail i:nth-child(2) { left: 52%; }
+    .rail i:nth-child(3) { left: 88%; }
+
+    .needs-section { color: var(--ink); background: var(--paper); }
+    .needs-intro { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(2rem,7vw,8rem); padding: clamp(5rem,9vw,8rem) var(--page) clamp(3rem,6vw,5rem); align-items: end; }
+    .needs-intro h2 { max-width: 9ch; margin: .8rem 0 0; font-size: clamp(3.6rem,7vw,7.8rem); line-height: .86; letter-spacing: -.075em; }
+    .needs-intro p { max-width: 40rem; margin: 0; color: var(--muted-dark); font-size: 1.08rem; line-height: 1.65; }
+    .needs-flow { display: grid; grid-template-columns: 1fr 1px 1fr 1px 1fr; border-top: 1px solid var(--line-dark); border-bottom: 1px solid var(--line-dark); }
+    .need-divider { background: var(--line-dark); }
+    .need { min-height: 31rem; padding: clamp(2rem,4vw,4rem) var(--page); }
+    .need.outcome { color: var(--paper); background: var(--ink); }
+    .need-index { color: var(--orange-deep); font: 750 .65rem/1 var(--mono); letter-spacing: .13em; }
+    .need.outcome .need-index { color: var(--orange); }
+    .need h3 { margin: 3.4rem 0 .9rem; font-size: clamp(2.4rem,4vw,4.8rem); line-height: .92; letter-spacing: -.06em; }
+    .need > p { max-width: 28rem; margin: 0; color: var(--muted-dark); line-height: 1.6; }
+    .need.outcome > p { color: #aaa59c; }
+    .ingredient-list { margin-top: 2.2rem; border-top: 1px solid var(--line-dark); }
+    .need.outcome .ingredient-list { border-color: var(--line-light); }
+    .ingredient { display: grid; grid-template-columns: 1.6rem 1fr; gap: .7rem; padding: .75rem 0; border-bottom: 1px solid var(--line-dark); }
+    .need.outcome .ingredient { border-color: var(--line-light); }
+    .ingredient b { color: var(--orange-deep); font: 750 .58rem/1.45 var(--mono); }
+    .need.outcome .ingredient b { color: var(--orange); }
+    .ingredient span { font-size: .82rem; font-weight: 750; }
+    .ingredient small { display: block; margin-top: .18rem; color: var(--muted-dark); font: 550 .67rem/1.4 var(--mono); }
+    .need.outcome .ingredient small { color: #7f7b74; }
+
+    .source-section { background: #151511; }
+    .source-switch { display: grid; grid-template-columns: 1fr 1fr; max-width: 52rem; margin-bottom: 2rem; padding: .35rem; border: 1px solid var(--line-light); border-radius: .85rem; }
+    .source-switch button { min-height: 3.5rem; border: 0; border-radius: .6rem; color: #918d85; background: transparent; font-weight: 800; cursor: pointer; }
+    .source-switch button[aria-selected="true"] { color: var(--ink); background: var(--paper); }
+    .source-panel { min-height: 35rem; border-top: 1px solid var(--line-light); }
+    .source-head { display: grid; grid-template-columns: .75fr 1.25fr; gap: clamp(2rem,7vw,8rem); padding: 3rem 0; align-items: start; }
+    .source-head h3 { margin: 0; font-size: clamp(2.5rem,5vw,5.8rem); line-height: .9; letter-spacing: -.065em; }
+    .source-head > div > p { max-width: 41rem; margin: 0; color: #aaa59c; line-height: 1.65; }
+    .source-path { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; border: 1px solid var(--line-light); background: var(--line-light); }
+    .source-step { min-height: 12rem; padding: 1.25rem; background: #11110e; }
+    .source-step small { color: var(--orange); font: 750 .56rem/1 var(--mono); letter-spacing: .1em; }
+    .source-step strong { display: block; margin-top: 2.4rem; font-size: 1rem; }
+    .source-step p { margin: .45rem 0 0; color: #89857d; font-size: .78rem; line-height: 1.5; }
+    .source-note { display: flex; justify-content: space-between; gap: 2rem; padding: 1.25rem 0 0; color: #8e8a82; font-size: .78rem; line-height: 1.55; }
+    .source-note strong { color: var(--paper); }
+    .booketeer-bridge { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5rem; align-items: stretch; }
+    .engine-block { min-height: 18rem; padding: clamp(1.5rem,3vw,2.4rem); border: 1px solid var(--line-light); border-radius: 1rem; }
+    .engine-block small { color: var(--orange); font: 750 .6rem/1 var(--mono); letter-spacing: .12em; }
+    .engine-block h4 { margin: 2.4rem 0 .7rem; font-size: clamp(1.8rem,3vw,3.2rem); line-height: .95; letter-spacing: -.055em; }
+    .engine-block p { max-width: 31rem; margin: 0; color: #aaa59c; font-size: .85rem; line-height: 1.6; }
+    .bridge-arrow { align-self: center; color: var(--orange); font: 800 1.6rem/1 var(--mono); }
+    .booketeer-facts { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; margin-top: 1.5rem; background: var(--line-light); border: 1px solid var(--line-light); }
+    .booketeer-fact { padding: 1rem; background: #11110e; }
+    .booketeer-fact b { display: block; color: var(--paper); font-size: .78rem; }
+    .booketeer-fact span { display: block; margin-top: .3rem; color: #817d75; font: 550 .62rem/1.45 var(--mono); }
+
+    .section { padding: clamp(6rem,10vw,10rem) var(--page); }
+    .section-head { display: grid; grid-template-columns: .85fr 1.15fr; gap: 3rem; align-items: end; margin-bottom: clamp(3rem,6vw,5.5rem); }
+    .section-title { margin: .8rem 0 0; font-size: clamp(3.3rem,6.8vw,7.8rem); line-height: .88; letter-spacing: -.075em; text-wrap: balance; }
+    .section-lede { max-width: 38rem; margin: 0; color: #aaa59c; font-size: 1.1rem; line-height: 1.65; }
+
+    .bucket-section { background: var(--ink); }
+    .bucket-workspace {
+      display: grid;
+      grid-template-columns: minmax(18rem,.85fr) minmax(22rem,1.15fr);
+      min-height: 34rem;
+      border: 1px solid var(--line-light);
+      border-radius: 1.4rem;
+      overflow: hidden;
+      background: var(--ink-soft);
+    }
+    .bucket-copy { padding: clamp(1.5rem,3vw,2.4rem); border-right: 1px solid var(--line-light); }
+    .workspace-top { display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
+    .workspace-top span { color: #a6a097; font: 650 .61rem/1 var(--mono); letter-spacing: .1em; }
+    .status { display: inline-flex; align-items: center; gap: .45rem; color: #8fcb99 !important; }
+    .status::before { content: ""; width: .44rem; aspect-ratio: 1; border-radius: 50%; background: var(--green); }
+    .bucket-copy h3 { margin: 2rem 0 .5rem; font-size: 2rem; letter-spacing: -.05em; }
+    .bucket-copy > p { margin: 0; color: #aaa59c; line-height: 1.55; }
+    .approved-list { display: grid; gap: .55rem; margin-top: 2rem; }
+    .approved-row { display: grid; grid-template-columns: 2.2rem 1fr auto; gap: .75rem; align-items: center; min-height: 4.4rem; padding: .7rem; border-top: 1px solid var(--line-light); }
+    .approved-row:first-child { border-top: 0; }
+    .approved-row b { display: grid; place-items: center; width: 2.1rem; aspect-ratio: 1; border-radius: .55rem; color: var(--orange); background: rgba(233,96,43,.1); font: 700 .58rem/1 var(--mono); }
+    .approved-row strong { font-size: .82rem; line-height: 1.35; }
+    .approved-row small { color: #77736c; font: 650 .52rem/1 var(--mono); }
+    .bucket-controls { display: flex; flex-direction: column; padding: clamp(1.5rem,3vw,2.4rem); background: #11110e; }
+    .control-block { padding-block: 1.2rem; border-bottom: 1px solid var(--line-light); }
+    .control-block:first-child { padding-top: 0; }
+    .control-block label, .control-label { display: block; margin-bottom: .75rem; color: #8d8981; font: 700 .58rem/1 var(--mono); letter-spacing: .1em; }
+    .segment { display: grid; grid-template-columns: repeat(3,1fr); gap: .35rem; padding: .3rem; border: 1px solid var(--line-light); border-radius: .75rem; }
+    .segment button { min-height: 2.8rem; border: 0; border-radius: .5rem; color: #8e8a82; background: transparent; font-size: .78rem; font-weight: 750; cursor: pointer; }
+    .segment button[aria-pressed="true"] { color: var(--ink); background: var(--paper); }
+    .account-chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .account-chip { display: inline-flex; align-items: center; gap: .45rem; padding: .6rem .75rem; border: 1px solid var(--line-light); border-radius: 999px; color: #c1bbb1; background: transparent; font-size: .74rem; }
+    .account-chip::before { content: ""; width: .38rem; aspect-ratio: 1; border-radius: 50%; background: var(--green); }
+    .next-post { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: end; margin-top: auto; padding-top: 1.7rem; }
+    .next-post small { display: block; color: #7f7b74; font: 650 .57rem/1 var(--mono); letter-spacing: .1em; }
+    .next-post strong { display: block; margin-top: .5rem; font-size: 1.35rem; letter-spacing: -.04em; }
+    .run-button { min-width: 8rem; }
+    .run-button.paused { border-color: var(--line-light); color: var(--paper); background: transparent; }
+
+    .hub-section { color: var(--ink); background: var(--paper); }
+    .hub-section .label { color: var(--orange-deep); }
+    .hub-section .section-lede { color: var(--muted-dark); }
+    .hub {
+      border-top: 1px solid var(--line-dark);
+      border-bottom: 1px solid var(--line-dark);
+    }
+    .hub-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line-dark); overflow-x: auto; }
+    .hub-tab { flex: 1; min-width: 9rem; min-height: 4.2rem; border: 0; border-right: 1px solid var(--line-dark); color: #746e65; background: transparent; font-size: .83rem; font-weight: 800; cursor: pointer; }
+    .hub-tab:last-child { border-right: 0; }
+    .hub-tab[aria-selected="true"] { color: var(--ink); background: #fffaf0; box-shadow: inset 0 -3px var(--orange); }
+    .hub-panel { min-height: 28rem; padding: clamp(1.5rem,4vw,3.5rem); }
+    .panel-head { display: flex; justify-content: space-between; align-items: end; gap: 1.5rem; }
+    .panel-head h3 { margin: 0; font-size: clamp(2rem,4vw,4.2rem); letter-spacing: -.06em; }
+    .panel-head p { max-width: 31rem; margin: 0; color: var(--muted-dark); line-height: 1.55; }
+    .panel-content { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; margin-top: 3rem; background: var(--line-dark); border: 1px solid var(--line-dark); }
+    .panel-item { min-height: 11rem; padding: 1.3rem; background: var(--paper); }
+    .panel-item small { color: var(--orange-deep); font: 700 .57rem/1 var(--mono); letter-spacing: .09em; }
+    .panel-item strong { display: block; margin-top: 2.5rem; font-size: 1.1rem; letter-spacing: -.03em; }
+    .panel-item p { margin: .45rem 0 0; color: var(--muted-dark); font-size: .82rem; line-height: 1.45; }
+
+    .control-section { background: #151511; }
+    .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(3rem,8vw,9rem); align-items: center; }
+    .control-copy h2 { margin: .9rem 0 1rem; max-width: 10ch; font-size: clamp(3.5rem,6vw,7rem); line-height: .88; letter-spacing: -.07em; }
+    .control-copy p { max-width: 36rem; color: #aaa59c; font-size: 1.05rem; line-height: 1.65; }
+    .delivery-switch { margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; max-width: 30rem; padding: .35rem; border: 1px solid var(--line-light); border-radius: .8rem; }
+    .delivery-switch button { min-height: 3.2rem; border: 0; border-radius: .55rem; color: #98938a; background: transparent; font-weight: 800; cursor: pointer; }
+    .delivery-switch button[aria-selected="true"] { color: var(--ink); background: var(--paper); }
+    .delivery-explain { min-height: 8rem; max-width: 30rem; margin-top: 1.2rem; }
+    .delivery-explain strong { display: block; font-size: 1.25rem; }
+    .delivery-explain p { margin-top: .5rem; font-size: .92rem; }
+    .account-list { border-top: 1px solid var(--line-light); }
+    .account-row { display: grid; grid-template-columns: 2.2rem 1fr auto; align-items: center; gap: .8rem; min-height: 5.3rem; border-bottom: 1px solid var(--line-light); }
+    .account-row i { width: 2rem; aspect-ratio: 1; border-radius: .55rem; background: linear-gradient(135deg,var(--orange),#4d2b22); }
+    .account-row strong { display: block; font-size: .82rem; }
+    .account-row small { color: #817d75; font: 600 .55rem/1.4 var(--mono); }
+    .account-row span { color: #8dcb97; font: 700 .55rem/1 var(--mono); }
+
+    .proof-section { padding-block: clamp(5rem,8vw,8rem); color: #1c0c05; background: var(--orange); }
+    .proof-grid { display: grid; grid-template-columns: .65fr 1.35fr; gap: clamp(2rem,7vw,8rem); align-items: start; }
+    .proof-meta { font: 750 .67rem/1.5 var(--mono); letter-spacing: .1em; }
+    .proof-quote { margin: 0; font-size: clamp(2rem,4vw,4.8rem); line-height: 1.02; letter-spacing: -.055em; font-weight: 850; }
+    .proof-note { max-width: 45rem; margin: 1.5rem 0 0; font-size: .83rem; line-height: 1.55; }
+
+    .plans-section { background: var(--ink); }
+    .plans { border-top: 1px solid var(--line-light); }
+    .plan { display: grid; grid-template-columns: .55fr 1.1fr auto; gap: 2rem; align-items: center; min-height: 9rem; border-bottom: 1px solid var(--line-light); }
+    .plan h3 { margin: 0; font-size: clamp(1.8rem,3.4vw,3.8rem); letter-spacing: -.06em; }
+    .plan-price { color: var(--orange); font: 750 .72rem/1 var(--mono); }
+    .plan-copy { color: #aaa59c; font-size: .9rem; line-height: 1.55; }
+    .plan-copy span { color: var(--paper); }
+    .price-clarity { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; margin-top: 3rem; border: 1px solid var(--line-light); background: var(--line-light); }
+    .price-extra { min-height: 12rem; padding: 1.35rem; background: #11110e; }
+    .price-extra small { color: var(--orange); font: 750 .57rem/1 var(--mono); letter-spacing: .1em; }
+    .price-extra strong { display: block; margin-top: 2rem; font-size: 1.05rem; }
+    .price-extra p { margin: .45rem 0 0; color: #8e8a82; font-size: .78rem; line-height: 1.5; }
+
+    .faq-section { color: var(--ink); background: var(--paper); }
+    .faq-layout { display: grid; grid-template-columns: .75fr 1.25fr; gap: clamp(3rem,8vw,9rem); }
+    .faq-layout h2 { margin: .8rem 0 0; font-size: clamp(3.4rem,6.5vw,7.2rem); line-height: .88; letter-spacing: -.075em; }
+    .faq-list { border-top: 1px solid var(--line-dark); }
+    .faq-item { border-bottom: 1px solid var(--line-dark); }
+    .faq-q { width: 100%; display: grid; grid-template-columns: 1fr 2rem; gap: 1rem; align-items: center; min-height: 4.7rem; border: 0; padding: 0; color: var(--ink); background: transparent; text-align: left; font-size: 1rem; font-weight: 800; cursor: pointer; }
+    .faq-q svg { width: 1.15rem; height: 1.15rem; justify-self: end; transition: transform .2s; }
+    .faq-q[aria-expanded="true"] svg { transform: rotate(45deg); }
+    .faq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .25s ease; }
+    .faq-a > div { overflow: hidden; }
+    .faq-a p { max-width: 42rem; margin: 0; padding: 0 2.5rem 1.4rem 0; color: var(--muted-dark); line-height: 1.6; }
+    .faq-q[aria-expanded="true"] + .faq-a { grid-template-rows: 1fr; }
+
+    .final {
+      min-height: 78svh;
+      display: grid;
+      place-items: center;
+      padding: 7rem var(--page);
+      text-align: center;
+      background: #0b0b09;
+    }
+    .final-inner { max-width: 78rem; }
+    .final h2 { margin: 0; font-size: clamp(4rem,8.5vw,9.2rem); line-height: .84; letter-spacing: -.08em; text-wrap: balance; }
+    .final h2 span { color: var(--orange); }
+    .final p { max-width: 36rem; margin: 1.7rem auto; color: #aaa59c; font-size: 1.05rem; line-height: 1.6; }
+
+    footer { display: flex; justify-content: space-between; align-items: center; gap: 2rem; padding: 2rem var(--page); border-top: 1px solid var(--line-light); color: #77736c; font-size: .75rem; }
+    .footer-actions { display: flex; gap: 1.2rem; align-items: center; }
+    .footer-actions button { border: 0; padding: 0; color: #8f8b83; background: transparent; font-size: .75rem; cursor: pointer; }
+    .footer-actions button:hover { color: var(--paper); }
+
+    .modal-shell {
+      position: fixed;
+      inset: 0;
+      z-index: 180;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      visibility: hidden;
+    }
+    .modal-shell.open { visibility: visible; }
+    .modal-backdrop { position: absolute; inset: 0; border: 0; background: rgba(0,0,0,.72); opacity: 0; backdrop-filter: blur(8px); transition: opacity .25s; }
+    .modal-shell.open .modal-backdrop { opacity: 1; }
+    .auth-modal {
+      position: relative;
+      width: min(31rem,100%);
+      max-height: calc(100svh - 2rem);
+      overflow: auto;
+      border: 1px solid rgba(11,11,9,.18);
+      border-radius: 1.1rem;
+      color: var(--ink);
+      background: var(--paper);
+      box-shadow: 0 2rem 8rem rgba(0,0,0,.5);
+      transform: translateY(.8rem) scale(.985);
+      opacity: 0;
+      transition: transform .28s ease, opacity .28s ease;
+    }
+    .modal-shell.open .auth-modal { transform: translateY(0) scale(1); opacity: 1; }
+    .modal-top { display: flex; justify-content: space-between; align-items: center; padding: 1.1rem 1.15rem; border-bottom: 1px solid var(--line-dark); }
+    .modal-top .brand { font-size: .92rem; }
+    .modal-top .mark { width: 1.65rem; }
+    .modal-close { display: grid; place-items: center; width: 2.3rem; aspect-ratio: 1; border: 1px solid var(--line-dark); border-radius: 50%; color: var(--ink); background: transparent; cursor: pointer; }
+    .modal-close svg { width: 1rem; height: 1rem; }
+    .auth-body { padding: clamp(1.5rem,5vw,2.6rem); }
+    .auth-kicker { color: var(--orange-deep); font: 750 .61rem/1 var(--mono); letter-spacing: .12em; }
+    .auth-body h2 { margin: 1rem 0 .7rem; font-size: clamp(2rem,7vw,3.15rem); line-height: .98; letter-spacing: -.06em; }
+    .auth-body > p { margin: 0 0 1.5rem; color: var(--muted-dark); line-height: 1.55; }
+    .field { display: block; margin-top: 1rem; }
+    .field span { display: block; margin-bottom: .5rem; color: var(--muted-dark); font: 700 .6rem/1 var(--mono); letter-spacing: .1em; }
+    .field input { width: 100%; height: 3.25rem; border: 1px solid var(--line-dark); border-radius: .65rem; padding: 0 .9rem; color: var(--ink); background: #fbf7ee; }
+    .field input:focus { outline: 2px solid rgba(233,96,43,.38); border-color: var(--orange); }
+    .auth-submit { width: 100%; margin-top: .8rem; min-height: 3.25rem; }
+    .form-note { margin: .65rem 0 0 !important; color: #7b756c !important; font-size: .75rem; line-height: 1.5 !important; }
+    .auth-separator { display: flex; align-items: center; gap: .8rem; margin: 1.5rem 0; color: #8b857c; font: 650 .58rem/1 var(--mono); letter-spacing: .09em; }
+    .auth-separator::before, .auth-separator::after { content: ""; height: 1px; flex: 1; background: var(--line-dark); }
+    .switch-path { width: 100%; min-height: 3.1rem; border: 1px solid var(--line-dark); border-radius: .65rem; color: var(--ink); background: transparent; font-size: .85rem; font-weight: 800; cursor: pointer; }
+    .switch-path:hover { border-color: rgba(11,11,9,.42); }
+    .alert {
+      margin: 1.4rem 0;
+      padding: 1rem;
+      border: 1px solid rgba(185,77,58,.35);
+      border-left: 3px solid var(--red);
+      border-radius: .65rem;
+      background: rgba(185,77,58,.055);
+    }
+    .alert strong { display: block; color: #943c2d; font-size: .85rem; }
+    .alert p { margin: .4rem 0 0; color: var(--muted-dark); font-size: .82rem; line-height: 1.5; }
+    .auth-actions { display: grid; gap: .6rem; }
+    .auth-actions .button { width: 100%; }
+    .email-chip { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem; border: 1px solid var(--line-dark); border-radius: .65rem; background: #fbf7ee; }
+    .email-chip strong { overflow: hidden; text-overflow: ellipsis; font-size: .88rem; }
+    .email-chip button { border: 0; color: var(--orange-deep); background: transparent; font-size: .74rem; font-weight: 800; cursor: pointer; }
+    .terms { display: grid; grid-template-columns: 1.15rem 1fr; gap: .7rem; align-items: start; margin: 1rem 0; color: var(--muted-dark); font-size: .75rem; line-height: 1.5; }
+    .terms input { width: 1.05rem; height: 1.05rem; margin-top: .1rem; accent-color: var(--orange); }
+    .success-mark { display: grid; place-items: center; width: 3.8rem; aspect-ratio: 1; margin-bottom: 1.3rem; border: 1px solid rgba(77,139,90,.4); border-radius: 50%; color: var(--green); background: rgba(77,139,90,.08); }
+    .success-mark svg { width: 1.7rem; height: 1.7rem; }
+    .success-list { margin: 1.3rem 0; padding: 0; list-style: none; border-top: 1px solid var(--line-dark); }
+    .success-list li { display: grid; grid-template-columns: 1.4rem 1fr; gap: .7rem; padding: .85rem 0; border-bottom: 1px solid var(--line-dark); color: var(--muted-dark); font-size: .8rem; line-height: 1.45; }
+    .success-list b { color: var(--orange-deep); font: 750 .62rem/1.4 var(--mono); }
+    .test-details { margin-top: 1.4rem; border-top: 1px solid var(--line-dark); padding-top: 1rem; }
+    .test-details summary { color: #837d74; font: 650 .58rem/1 var(--mono); letter-spacing: .08em; cursor: pointer; }
+    .test-details p { margin: .7rem 0 0; color: #837d74; font-size: .72rem; line-height: 1.5; }
+
+    .review-dialog { width: min(40rem,100%); }
+    .review-body { padding: 2rem; }
+    .review-body h2 { margin: 0; font-size: 2rem; letter-spacing: -.05em; }
+    .review-body h3 { margin: 1.7rem 0 .5rem; font-size: 1rem; }
+    .review-body p, .review-body li { color: var(--muted-dark); font-size: .85rem; line-height: 1.6; }
+    .review-body ul { padding-left: 1.1rem; }
+
+    @media (max-width: 1000px) {
+      .header { grid-template-columns: 1fr 1fr; }
+      .nav { display: none; }
+      .hero { grid-template-columns: 1fr; padding-top: 8rem; }
+      .hero-copy { max-width: 54rem; }
+      .hero-scene { height: 53vw; min-height: 33rem; }
+      .needs-intro, .source-head { grid-template-columns: 1fr; }
+      .needs-flow { grid-template-columns: 1fr; }
+      .need-divider { width: 100%; height: 1px; }
+      .need { min-height: auto; }
+      .need h3 { margin-top: 2rem; }
+      .source-path { grid-template-columns: repeat(2,1fr); }
+      .booketeer-bridge { grid-template-columns: 1fr; }
+      .bridge-arrow { transform: rotate(90deg); justify-self: center; }
+      .section-head { grid-template-columns: 1fr; }
+      .bucket-workspace { grid-template-columns: 1fr; }
+      .bucket-copy { border-right: 0; border-bottom: 1px solid var(--line-light); }
+      .control-grid, .proof-grid, .faq-layout { grid-template-columns: 1fr; }
+      .plan { grid-template-columns: .6fr 1.2fr auto; }
+      .price-clarity { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      :root { --page: 1.1rem; }
+      .header { min-height: 4.7rem; }
+      .header-actions { gap: .35rem; }
+      .header .text-button { display: block; padding: .55rem .2rem; font-size: .72rem; white-space: nowrap; }
+      .header .button { min-height: 2.5rem; padding: .6rem .68rem; font-size: .7rem; }
+      .hero { min-height: 100svh; padding-top: 7rem; padding-bottom: 1.5rem; align-items: start; }
+      .hero h1 { max-width: 8.3ch; font-size: clamp(3.65rem,17.5vw,5.2rem); }
+      .hero-copy > p { font-size: .98rem; }
+      .hero-actions .button { flex: 1; min-width: 9rem; }
+      .trust { display: grid; gap: .45rem; }
+      .hero-scene { height: 27rem; min-height: 27rem; margin-top: .5rem; }
+      .scene { inset: 0 -42% 0 -14%; transform: rotateX(60deg) rotateZ(-26deg) scale(.8); }
+      .needs-intro { padding-block: 5rem 3rem; }
+      .needs-intro h2 { font-size: clamp(3.2rem,15vw,5rem); }
+      .need { padding-block: 2.5rem; }
+      .source-switch { grid-template-columns: 1fr; }
+      .source-path { grid-template-columns: 1fr; }
+      .source-note { flex-direction: column; gap: .5rem; }
+      .booketeer-facts { grid-template-columns: 1fr; }
+      .section { padding-block: 6rem; }
+      .section-title { font-size: clamp(3.2rem,15vw,5rem); }
+      .section-head { gap: 1.5rem; }
+      .bucket-workspace { border-radius: 1rem; }
+      .panel-head { display: block; }
+      .panel-head p { margin-top: .8rem; }
+      .panel-content { grid-template-columns: 1fr; }
+      .panel-item { min-height: 8rem; }
+      .panel-item strong { margin-top: 1.8rem; }
+      .hub-tab { min-width: 7rem; }
+      .control-copy h2 { font-size: clamp(3.2rem,15vw,5.3rem); }
+      .plan { grid-template-columns: 1fr; gap: .8rem; padding: 1.5rem 0; }
+      .plan .button { width: 100%; }
+      .proof-quote { font-size: clamp(2.1rem,10vw,3.2rem); }
+      .final { min-height: 72svh; }
+      .final h2 { font-size: clamp(3.7rem,17vw,5.7rem); }
+      footer { align-items: flex-start; flex-direction: column; }
+      .footer-actions { flex-wrap: wrap; }
+      .modal-shell { padding: .6rem; align-items: end; }
+      .auth-modal { max-height: calc(100svh - 1.2rem); border-radius: 1rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
+      .scene { transform: rotateX(58deg) rotateZ(-26deg); }
+    }
+
+    /* V3 — the hero is a product explanation driven by scroll, not a decorative movie. */
+    .cinematic {
+      --story-progress: 0;
+      position: relative;
+      height: 430svh;
+      color: var(--paper);
+      background: var(--ink);
+      border-bottom: 1px solid var(--line-light);
+    }
+    .cinema-sticky {
+      position: sticky;
+      top: 0;
+      display: grid;
+      grid-template-columns: minmax(25rem,.88fr) minmax(34rem,1.12fr);
+      align-items: center;
+      min-height: 46rem;
+      height: 100svh;
+      padding: 7.5rem var(--page) 2.5rem;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .cinema-sticky::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background:
+        radial-gradient(circle at 74% 43%, rgba(233,96,43,.12), transparent 27%),
+        linear-gradient(rgba(242,236,223,.028) 1px, transparent 1px),
+        linear-gradient(90deg,rgba(242,236,223,.028) 1px,transparent 1px);
+      background-size: auto, 5rem 5rem, 5rem 5rem;
+      mask-image: linear-gradient(90deg, transparent, #000 16%, #000 88%, transparent);
+    }
+    .cinema-sticky::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      z-index: 20;
+      height: 18vh;
+      pointer-events: none;
+      background: linear-gradient(transparent, rgba(11,11,9,.88));
+    }
+    .story-copy {
+      position: relative;
+      z-index: 30;
+      align-self: stretch;
+      min-height: 34rem;
+    }
+    .story-identity {
+      position: absolute;
+      top: 1.1rem;
+      left: 0;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: .55rem .85rem;
+    }
+    .story-identity .label { margin: 0; }
+    .story-beat {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: min(100%, 47rem);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(calc(-44% + 2rem)) scale(.985);
+      transition: opacity .42s ease, transform .62s cubic-bezier(.2,.75,.2,1);
+    }
+    .cinematic[data-story-stage="0"] .story-beat[data-beat="0"],
+    .cinematic[data-story-stage="1"] .story-beat[data-beat="1"],
+    .cinematic[data-story-stage="2"] .story-beat[data-beat="2"],
+    .cinematic[data-story-stage="3"] .story-beat[data-beat="3"] {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(-44%) scale(1);
+    }
+    .beat-index {
+      display: block;
+      margin-bottom: 1.05rem;
+      color: var(--orange);
+      font: 750 .68rem/1 var(--mono);
+      letter-spacing: .14em;
+    }
+    .story-beat h1,
+    .story-beat h2 {
+      max-width: 9.3ch;
+      margin: 0;
+      font-size: clamp(3.5rem, 6.4vw, 7.4rem);
+      line-height: .88;
+      letter-spacing: -.075em;
+      text-wrap: balance;
+    }
+    .story-beat h1 { max-width: 10.8ch; font-size: clamp(3.5rem, 5.9vw, 6.9rem); }
+    .story-beat h1 span,
+    .story-beat h2 span { color: var(--orange); }
+    .story-beat > p {
+      max-width: 39rem;
+      margin: 1.5rem 0 0;
+      color: #b8b2a8;
+      font-size: clamp(1rem,1.3vw,1.18rem);
+      line-height: 1.58;
+    }
+    .story-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.55rem; }
+    .story-trust { display: flex; flex-wrap: wrap; gap: .55rem 1.2rem; margin-top: 1.1rem; color: #88847c; font: 650 .65rem/1.45 var(--mono); }
+    .story-trust span { display: inline-flex; align-items: center; gap: .42rem; }
+    .story-trust span::before { content: ""; width: .32rem; aspect-ratio: 1; border-radius: 50%; background: var(--orange); }
+
+    .story-rail {
+      position: absolute;
+      left: 0;
+      bottom: .6rem;
+      z-index: 31;
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+    }
+    .story-step {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      border: 0;
+      padding: .4rem .5rem;
+      color: #6f6b65;
+      background: transparent;
+      font: 700 .56rem/1 var(--mono);
+      letter-spacing: .08em;
+      cursor: pointer;
+    }
+    .story-step::before { content: ""; width: .42rem; aspect-ratio: 1; border: 1px solid currentColor; border-radius: 50%; }
+    .story-step.is-current { color: var(--paper); }
+    .story-step.is-current::before { border-color: var(--orange); background: var(--orange); box-shadow: 0 0 0 .22rem rgba(233,96,43,.13); }
+    .story-rail i { width: 1.6rem; height: 1px; background: var(--line-light); }
+    .scroll-note {
+      position: absolute;
+      right: var(--page);
+      bottom: 1.1rem;
+      z-index: 31;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      color: #7e7971;
+      font: 700 .57rem/1 var(--mono);
+      letter-spacing: .11em;
+    }
+    .scroll-note::after { content: ""; width: 3.2rem; height: 1px; background: linear-gradient(90deg,var(--orange),transparent); }
+
+    .cinema-world {
+      position: relative;
+      z-index: 5;
+      height: min(69vw, 46rem);
+      min-height: 39rem;
+      perspective: 1500px;
+      transform: translateX(3vw);
+    }
+    .world-shell {
+      position: absolute;
+      inset: 2% -10% -2% -2%;
+      transform-style: preserve-3d;
+      transform: rotateX(55deg) rotateZ(-25deg) rotateY(calc(-7deg + var(--story-progress) * 14deg));
+      transition: transform .08s linear;
+    }
+    .world-floor {
+      position: absolute;
+      left: 7%;
+      top: 19%;
+      width: 82%;
+      height: 65%;
+      border: 1px solid rgba(242,236,223,.15);
+      border-radius: 7rem 3rem 7rem 3rem;
+      background:
+        radial-gradient(circle at 62% 46%, rgba(233,96,43,.2), transparent 22%),
+        linear-gradient(145deg,#171713,#0d0d0b 68%);
+      box-shadow: 2.5rem 4rem 7rem rgba(0,0,0,.52), inset 0 0 5rem rgba(233,96,43,.04);
+      transform: translateZ(-3rem);
+    }
+    .world-floor::before {
+      content: "";
+      position: absolute;
+      inset: 8%;
+      border: 1px dashed rgba(242,236,223,.1);
+      border-radius: inherit;
+    }
+    .world-floor::after {
+      content: "MIRA CAMPAIGN DESK";
+      position: absolute;
+      right: 8%;
+      bottom: 8%;
+      color: rgba(242,236,223,.22);
+      font: 700 .58rem/1 var(--mono);
+      letter-spacing: .16em;
+    }
+    .world-object { position: absolute; transform-style: preserve-3d; transition: opacity .55s ease, transform .75s cubic-bezier(.2,.75,.2,1), filter .55s ease; }
+
+    .clay-book {
+      left: 8%;
+      top: 31%;
+      width: 20rem;
+      height: 14rem;
+      transform: translate3d(0,0,5.5rem) rotateZ(1deg);
+      filter: drop-shadow(1.2rem 2rem 1.4rem rgba(0,0,0,.45));
+    }
+    .book-spine {
+      position: absolute;
+      left: 48%;
+      top: 7%;
+      bottom: 4%;
+      width: 1rem;
+      border-radius: 999px;
+      background: #e9602b;
+      box-shadow: inset -.25rem 0 .35rem rgba(68,18,4,.35);
+      transform: translateZ(.8rem);
+    }
+    .open-page {
+      position: absolute;
+      top: 0;
+      width: 51%;
+      height: 100%;
+      overflow: hidden;
+      border: 1px solid rgba(11,11,9,.16);
+      background: #efe8da;
+      box-shadow: inset 0 -.6rem 1.3rem rgba(100,80,50,.12);
+    }
+    .open-page::after {
+      content: "";
+      position: absolute;
+      inset: 21% 17%;
+      opacity: .38;
+      background: repeating-linear-gradient(#655f56 0 2px,transparent 2px 1.1rem);
+    }
+    .page-left { left: 0; border-radius: 1rem .25rem .35rem 1rem; transform-origin: 100% 50%; transform: rotateY(14deg) translateZ(.2rem); }
+    .page-right { right: 0; border-radius: .25rem 1rem 1rem .35rem; transform-origin: 0 50%; transform: rotateY(-14deg) translateZ(.2rem); }
+    .clay-pen {
+      position: absolute;
+      left: 48%;
+      top: -20%;
+      width: 1.15rem;
+      height: 12rem;
+      border-radius: 999px 999px .25rem .25rem;
+      background: linear-gradient(90deg,#ba3e16,#f07a47 48%,#9d2d0d);
+      box-shadow: .5rem 1rem 1rem rgba(0,0,0,.35);
+      transform: translateZ(5.4rem) rotateZ(30deg);
+      transform-origin: 50% 90%;
+      animation: pen-write 2.7s ease-in-out infinite;
+    }
+    .clay-pen::after { content: ""; position: absolute; left: 50%; bottom: -1.25rem; width: 0; height: 0; border-left: .55rem solid transparent; border-right: .55rem solid transparent; border-top: 1.5rem solid #c8bca8; transform: translateX(-50%); }
+    @keyframes pen-write { 0%,100% { transform: translateZ(5.4rem) rotateZ(30deg) translateY(0); } 50% { transform: translateZ(5.4rem) rotateZ(25deg) translateY(.8rem); } }
+
+    .source-paths {
+      left: 2%;
+      top: 22%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .7rem;
+      width: 24rem;
+      opacity: 0;
+      transform: translate3d(-3rem,-2rem,9rem) scale(.8);
+    }
+    .path-card {
+      min-height: 6.7rem;
+      padding: .9rem;
+      border: 1px solid rgba(242,236,223,.22);
+      border-radius: 1rem;
+      background: #1b1b16;
+      box-shadow: .8rem 1.2rem 2rem rgba(0,0,0,.34);
+    }
+    .path-card small { display: block; color: var(--orange); font: 750 .53rem/1 var(--mono); letter-spacing: .1em; }
+    .path-card strong { display: block; margin-top: 1.25rem; font-size: .85rem; }
+    .path-card span { display: block; margin-top: .35rem; color: #89857d; font: 600 .52rem/1.4 var(--mono); }
+    .path-card.optional { border-color: rgba(233,96,43,.42); background: #21140e; }
+
+    .asset-stream {
+      left: 39%;
+      top: 27%;
+      width: 19rem;
+      height: 22rem;
+      opacity: 0;
+      transform: translate3d(-2rem,-2rem,11rem);
+    }
+    .asset-token {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 7.8rem;
+      min-height: 4.4rem;
+      padding: .75rem;
+      border: 1px solid rgba(11,11,9,.18);
+      border-radius: 1rem;
+      color: #25130b;
+      background: #e9602b;
+      box-shadow: .8rem 1.3rem 2rem rgba(0,0,0,.32), inset 0 .15rem rgba(255,255,255,.22);
+      font: 850 .56rem/1.25 var(--mono);
+      letter-spacing: .07em;
+      text-align: center;
+      transition: transform .8s cubic-bezier(.2,.8,.2,1), opacity .5s ease;
+    }
+    .asset-token:nth-child(1) { left: 0; top: 0; transform: translateZ(2rem) rotateZ(-4deg); }
+    .asset-token:nth-child(2) { left: 7.3rem; top: 5.1rem; transform: translateZ(5rem) rotateZ(5deg); background: #efe8da; }
+    .asset-token:nth-child(3) { left: 1.3rem; top: 10.8rem; transform: translateZ(8rem) rotateZ(-7deg); background: #d5cab8; }
+
+    .bucket-object {
+      left: 60%;
+      top: 30%;
+      width: 18rem;
+      height: 20rem;
+      opacity: .35;
+      transform: translate3d(6rem,1rem,5rem) scale(.86);
+      filter: grayscale(.8);
+    }
+    .bucket-handle {
+      position: absolute;
+      left: 50%;
+      top: -1.8rem;
+      width: 14rem;
+      height: 10rem;
+      border: 1.35rem solid #a8441e;
+      border-bottom: 0;
+      border-radius: 8rem 8rem 0 0;
+      transform: translateX(-50%) translateZ(-.8rem);
+    }
+    .bucket-body {
+      position: absolute;
+      inset: 4rem 0 0;
+      display: grid;
+      place-items: center;
+      clip-path: polygon(6% 0,94% 0,82% 100%,18% 100%);
+      border-radius: 1.5rem 1.5rem 3.5rem 3.5rem;
+      background: linear-gradient(120deg,#913511,#e9602b 47%,#7e2c0e);
+      box-shadow: 1.3rem 2rem 2.4rem rgba(0,0,0,.43), inset .7rem .4rem 1.1rem rgba(255,255,255,.2);
+    }
+    .bucket-body::before { content: "BUCKET"; color: #261008; font: 900 1.1rem/1 var(--mono); letter-spacing: .15em; transform: rotateZ(1deg); }
+    .bucket-play {
+      position: absolute;
+      left: 50%;
+      bottom: 2.4rem;
+      z-index: 3;
+      display: grid;
+      place-items: center;
+      width: 3.6rem;
+      aspect-ratio: 1;
+      border: 2px solid #271109;
+      border-radius: 50%;
+      color: #271109;
+      background: #f1e9db;
+      transform: translateX(-50%) translateZ(1rem);
+      box-shadow: 0 .55rem 1rem rgba(62,20,5,.28);
+    }
+    .bucket-play svg { width: 1.2rem; margin-left: .15rem; }
+    .bucket-panel {
+      left: 55%;
+      top: 21%;
+      width: 23rem;
+      min-height: 12rem;
+      padding: 1rem;
+      opacity: 0;
+      border: 1px solid rgba(242,236,223,.2);
+      border-radius: 1.1rem;
+      background: rgba(18,18,15,.95);
+      box-shadow: 1rem 1.8rem 3rem rgba(0,0,0,.4);
+      transform: translate3d(3rem,-3rem,12rem) scale(.86);
+    }
+    .panel-title { display: flex; justify-content: space-between; color: #88847c; font: 700 .55rem/1 var(--mono); letter-spacing: .09em; }
+    .panel-title b { color: #8fcb99; }
+    .confirm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; margin-top: 1rem; }
+    .confirm-item { padding: .72rem; border: 1px solid var(--line-light); border-radius: .65rem; }
+    .confirm-item small { display: block; color: #77736c; font: 700 .48rem/1 var(--mono); }
+    .confirm-item strong { display: block; margin-top: .38rem; font-size: .72rem; }
+    .start-bar { display: flex; justify-content: space-between; align-items: center; margin-top: .6rem; padding: .75rem; border-radius: .68rem; color: #271109; background: var(--orange); font: 850 .58rem/1 var(--mono); letter-spacing: .08em; }
+    .start-bar span { display: inline-flex; align-items: center; gap: .45rem; }
+    .start-bar span::before { content: ""; width: .45rem; aspect-ratio: 1; border-radius: 50%; background: #271109; }
+
+    .output-world {
+      left: 6%;
+      top: 24%;
+      width: 76%;
+      height: 72%;
+      opacity: 0;
+      transform: translate3d(3rem,-2rem,10rem) scale(.85);
+    }
+    .post-flight {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 7.3rem;
+      aspect-ratio: 9/16;
+      padding: .7rem;
+      border: 1px solid rgba(242,236,223,.25);
+      border-radius: .8rem;
+      background: #181814;
+      box-shadow: .8rem 1.4rem 2rem rgba(0,0,0,.42);
+    }
+    .post-flight small { color: var(--orange); font: 750 .48rem/1 var(--mono); }
+    .post-flight strong { font-size: .67rem; line-height: 1.25; }
+    .post-flight i { width: 64%; height: .22rem; border-radius: 1rem; background: var(--line-light); box-shadow: 0 .55rem var(--line-light); }
+    .post-flight.flight-one { left: 31%; top: 39%; transform: translateZ(3rem) rotateZ(-7deg); }
+    .post-flight.flight-two { left: 53%; top: 26%; transform: translateZ(7rem) rotateZ(3deg); }
+    .post-flight.flight-three { left: 74%; top: 13%; transform: translateZ(11rem) rotateZ(9deg); }
+    .account-dock {
+      position: absolute;
+      right: 0;
+      bottom: 5%;
+      width: 12.5rem;
+      padding: .9rem;
+      border: 1px solid rgba(242,236,223,.18);
+      border-radius: .85rem;
+      background: #11110e;
+      box-shadow: 1rem 1.5rem 2rem rgba(0,0,0,.38);
+    }
+    .account-dock small { color: #77736c; font: 700 .48rem/1 var(--mono); }
+    .account-dock strong { display: block; margin-top: .5rem; font-size: .78rem; }
+    .account-dock span { display: block; margin-top: .25rem; color: #8fcb99; font: 700 .48rem/1 var(--mono); }
+    .signal-stack {
+      position: absolute;
+      left: 1%;
+      top: 4%;
+      display: grid;
+      grid-template-columns: repeat(2,8.6rem);
+      gap: .55rem;
+    }
+    .signal {
+      min-height: 4.7rem;
+      padding: .75rem;
+      border: 1px solid rgba(242,236,223,.2);
+      border-radius: .8rem;
+      background: #ece4d6;
+      box-shadow: .7rem 1.1rem 1.7rem rgba(0,0,0,.3);
+    }
+    .signal small { display: block; color: #8c8275; font: 750 .47rem/1 var(--mono); letter-spacing: .08em; }
+    .signal strong { display: block; margin-top: .6rem; color: #25130b; font-size: .8rem; }
+    .signal.possible { border-color: rgba(233,96,43,.55); background: #e9602b; }
+    .signal.possible small,.signal.possible strong { color: #291108; }
+    .proof-flag {
+      position: absolute;
+      left: 2%;
+      bottom: 1%;
+      width: 19rem;
+      padding: .8rem 1rem;
+      border-left: 2px solid var(--orange);
+      color: #8b867e;
+      background: rgba(11,11,9,.78);
+      font: 650 .52rem/1.45 var(--mono);
+    }
+    .proof-flag strong { color: var(--paper); }
+
+    .cinematic[data-story-stage="0"] .clay-book { opacity: 1; transform: translate3d(5rem,1rem,6rem) rotateZ(1deg) scale(1.08); }
+    .cinematic:not([data-story-stage="0"]) .clay-book { opacity: .17; transform: translate3d(-3rem,10rem,-1rem) rotateZ(-8deg) scale(.65); filter: grayscale(.8) blur(.4px); }
+    .cinematic[data-story-stage="1"] .source-paths { opacity: 1; transform: translate3d(0,0,10rem) scale(1); }
+    .cinematic[data-story-stage="1"] .asset-stream { opacity: 1; transform: translate3d(0,0,11rem); }
+    .cinematic[data-story-stage="1"] .bucket-object { opacity: .8; transform: translate3d(0,2rem,5rem) scale(.9); filter: none; }
+    .cinematic[data-story-stage="2"] .source-paths { opacity: .18; transform: translate3d(-5rem,8rem,1rem) scale(.68); }
+    .cinematic[data-story-stage="2"] .asset-stream { opacity: .15; transform: translate3d(9rem,11rem,2rem) scale(.62); }
+    .cinematic[data-story-stage="2"] .asset-token { transform: translate3d(8rem,10rem,-1rem) scale(.45); opacity: .12; }
+    .cinematic[data-story-stage="2"] .bucket-object { opacity: 1; transform: translate3d(-8rem,5rem,9rem) scale(1.12); filter: none; }
+    .cinematic[data-story-stage="2"] .bucket-panel { opacity: 1; transform: translate3d(0,0,13rem) scale(1); }
+    .cinematic[data-story-stage="3"] .bucket-object { opacity: 1; transform: translate3d(-4rem,7rem,4rem) scale(.78); filter: none; }
+    .cinematic[data-story-stage="3"] .bucket-panel { opacity: .22; transform: translate3d(-9rem,9rem,1rem) scale(.62); }
+    .cinematic[data-story-stage="3"] .output-world { opacity: 1; transform: translate3d(0,0,11rem) scale(1); }
+    .cinematic[data-story-stage="3"] .bucket-play { color: #0c3e18; border-color: #0c3e18; background: #8fcb99; }
+    .cinematic[data-story-stage="3"] .bucket-play svg { transform: rotate(90deg); }
+
+    @media (max-width: 1080px) {
+      .cinema-sticky { grid-template-columns: minmax(22rem,.9fr) minmax(30rem,1.1fr); }
+      .cinema-world { transform: translateX(8vw) scale(.9); transform-origin: 50% 50%; }
+      .story-beat h1,.story-beat h2 { font-size: clamp(3.3rem,6.2vw,6rem); }
+    }
+    @media (max-width: 800px) {
+      .cinematic { height: 450svh; }
+      .cinema-sticky { grid-template-columns: 1fr; grid-template-rows: 43% 57%; min-height: 38rem; padding: 5.3rem 1.1rem 1rem; }
+      .story-copy { grid-row: 2; min-height: 0; }
+      .story-identity { top: auto; bottom: .45rem; opacity: .75; }
+      .story-identity .hero-name::before { display: none; }
+      .story-beat { top: 46%; width: 100%; transform: translateY(calc(-50% + 1rem)); }
+      .cinematic[data-story-stage="0"] .story-beat[data-beat="0"],
+      .cinematic[data-story-stage="1"] .story-beat[data-beat="1"],
+      .cinematic[data-story-stage="2"] .story-beat[data-beat="2"],
+      .cinematic[data-story-stage="3"] .story-beat[data-beat="3"] { transform: translateY(-50%); }
+      .story-beat h1,.story-beat h2 { max-width: 10ch; font-size: clamp(2.9rem,11.7vw,4.9rem); }
+      .story-beat h1 { max-width: 11.5ch; }
+      .story-beat > p { max-width: 36rem; margin-top: 1rem; font-size: .94rem; line-height: 1.5; }
+      .story-actions { margin-top: 1rem; }
+      .story-trust { display: none; }
+      .story-rail { display: none; }
+      .scroll-note { right: 1.1rem; bottom: .65rem; font-size: .48rem; }
+      .cinema-world { grid-row: 1; height: 24rem; min-height: 24rem; transform: translateX(12vw) scale(.68); transform-origin: 50% 30%; }
+      .world-shell { inset: -12% -28% -8% -14%; }
+      .proof-flag { width: 17rem; font-size: .48rem; }
+    }
+    @media (max-width: 520px) {
+      .cinema-sticky { grid-template-rows: 39% 61%; }
+      .story-identity { display: none; }
+      .story-beat { top: 44%; }
+      .story-beat h1,.story-beat h2 { font-size: clamp(2.55rem,12vw,4rem); }
+      .story-beat > p { font-size: .86rem; }
+      .story-actions .button { min-height: 2.65rem; padding: .62rem .78rem; font-size: .76rem; }
+      .cinema-world { height: 20rem; min-height: 20rem; transform: translateX(16vw) scale(.58); }
+      .scroll-note { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cinematic { height: auto; }
+      .cinema-sticky { position: relative; display: block; height: auto; min-height: 0; padding: 8rem var(--page) 4rem; }
+      .cinema-world,.story-rail,.scroll-note { display: none; }
+      .story-copy { min-height: 0; }
+      .story-identity { position: static; margin-bottom: 3rem; }
+      .story-beat { position: static; width: 100%; opacity: 1; pointer-events: auto; transform: none; padding: 2.5rem 0; border-top: 1px solid var(--line-light); }
+      .story-beat:first-of-type { border-top: 0; }
+      .story-beat h1,.story-beat h2 { max-width: 11ch; }
+      .story-actions { display: flex; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="header">
+    <a class="brand" href="#top" aria-label="MIRA home"><span class="mark" aria-hidden="true">MIR</span><span>MIRA</span></a>
+    <nav class="nav" aria-label="Primary navigation">
+      <a href="#how">How it works</a>
+      <a href="#buckets">Buckets</a>
+      <a href="#plans">Plans</a>
+      <a href="#faq">Questions</a>
+    </nav>
+    <div class="header-actions">
+      <button class="text-button" type="button" data-open-auth="signin">Sign in</button>
+      <button class="button button-primary" type="button" data-open-auth="signup">Create free account</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="cinematic" id="top" data-story-stage="0" aria-label="How MIRA turns approved book content into a running TikTok campaign">
+      <div class="cinema-sticky">
+        <div class="story-copy">
+          <div class="story-identity">
+            <div class="label">MIRA</div>
+            <div class="hero-name">Marketing Indie Resource Accelerator</div>
+          </div>
+
+          <article class="story-beat" data-beat="0">
+            <span class="beat-index">01 · YOU WRITE</span>
+            <h1>Direct your TikTok feed—<span>without opening TikTok every day.</span></h1>
+            <p>Bring or create the content. Choose your accounts and schedule. Press play on a Bucket. MIRA keeps the campaign moving while you write the next book.</p>
+            <div class="story-actions">
+              <button class="button button-primary" type="button" data-open-auth="signup">Create free account</button>
+              <a class="button button-outline" href="#how">See what a Bucket needs</a>
+            </div>
+            <div class="story-trust"><span>Bring your own content</span><span>Use your own accounts</span><span>Pause any time</span></div>
+          </article>
+
+          <article class="story-beat" data-beat="1">
+            <span class="beat-index">02 · YOU DIRECT</span>
+            <h2>Bring it. Create it. <span>Or mix both.</span></h2>
+            <p>A post needs a visual, on-screen text, a caption, and hashtags. Bring yours—or paste one scene and make what is missing in MIRA. Booketeer is the optional whole-manuscript path.</p>
+            <div class="story-trust"><span>No indexed book required</span><span>Generation is optional</span><span>Videos are bring-your-own</span></div>
+          </article>
+
+          <article class="story-beat" data-beat="2">
+            <span class="beat-index">03 · PRESS PLAY</span>
+            <h2>Approve the plan. <span>Start the Bucket.</span></h2>
+            <p>Confirm the content, TikTok accounts you own, posting rhythm, and Direct Post or Draft. Nothing publishes until you press Start.</p>
+            <div class="story-trust"><span>Only approved content</span><span>Your accounts</span><span>Your schedule</span></div>
+          </article>
+
+          <article class="story-beat" data-beat="3">
+            <span class="beat-index">04 · READERS DISCOVER</span>
+            <h2>MIRA runs. <span>You keep writing.</span></h2>
+            <p>MIRA varies only approved ingredients, posts on schedule, and reports views, saves, follows, and book clicks. Pause, resume, or stop whenever you want.</p>
+            <div class="story-actions">
+              <button class="button button-primary" type="button" data-open-auth="signup">Start free</button>
+              <a class="button button-outline" href="#buckets">See the Bucket controls</a>
+            </div>
+          </article>
+
+          <nav class="story-rail" aria-label="MIRA story stages">
+            <button class="story-step is-current" type="button" data-jump-stage="0">WRITE</button><i></i>
+            <button class="story-step" type="button" data-jump-stage="1">DIRECT</button><i></i>
+            <button class="story-step" type="button" data-jump-stage="2">RUN</button><i></i>
+            <button class="story-step" type="button" data-jump-stage="3">DISCOVER</button>
+          </nav>
+        </div>
+
+        <div class="cinema-world" aria-hidden="true">
+          <div class="world-shell">
+            <div class="world-floor"></div>
+
+            <div class="world-object clay-book">
+              <div class="open-page page-left"></div>
+              <div class="open-page page-right"></div>
+              <div class="book-spine"></div>
+              <div class="clay-pen"></div>
+            </div>
+
+            <div class="world-object source-paths">
+              <div class="path-card"><small>READY CONTENT</small><strong>Bring your own</strong><span>Visuals · text · captions · hashtags</span></div>
+              <div class="path-card optional"><small>BOOK OR SCENE</small><strong>Create what is missing</strong><span>Paste one scene · Booketeer optional</span></div>
+            </div>
+
+            <div class="world-object asset-stream">
+              <div class="asset-token">VISUAL<br>IMAGE OR VIDEO</div>
+              <div class="asset-token">ON-SCREEN<br>TEXT</div>
+              <div class="asset-token">CAPTION +<br>HASHTAGS</div>
+            </div>
+
+            <div class="world-object bucket-object">
+              <div class="bucket-handle"></div>
+              <div class="bucket-body"></div>
+              <div class="bucket-play"><svg viewBox="0 0 20 20" fill="none"><path d="M7 5l8 5-8 5V5z" fill="currentColor"/></svg></div>
+            </div>
+
+            <div class="world-object bucket-panel">
+              <div class="panel-title"><span>READY TO START</span><b>APPROVED</b></div>
+              <div class="confirm-grid">
+                <div class="confirm-item"><small>CONTENT</small><strong>3 approved posts</strong></div>
+                <div class="confirm-item"><small>ACCOUNTS</small><strong>2 you own</strong></div>
+                <div class="confirm-item"><small>RHYTHM</small><strong>2 posts per day</strong></div>
+                <div class="confirm-item"><small>DELIVERY</small><strong>Direct Post</strong></div>
+              </div>
+              <div class="start-bar"><span>START BUCKET</span><svg viewBox="0 0 20 20" fill="none" width="16" height="16"><path d="M7 5l8 5-8 5V5z" fill="currentColor"/></svg></div>
+            </div>
+
+            <div class="world-object output-world">
+              <div class="signal-stack">
+                <div class="signal"><small>DISCOVERY</small><strong>Views + saves</strong></div>
+                <div class="signal"><small>AUDIENCE</small><strong>Follows + clicks</strong></div>
+                <div class="signal possible"><small>POSSIBLE OUTCOME</small><strong>Sales + rank</strong></div>
+                <div class="signal"><small>CONTROL</small><strong>Pause any time</strong></div>
+              </div>
+              <div class="post-flight flight-one"><small>POST 01</small><strong>He remembered every promise. Except the one that broke her.</strong><i></i></div>
+              <div class="post-flight flight-two"><small>POST 02</small><strong>She came home for one night. He had waited ten years.</strong><i></i></div>
+              <div class="post-flight flight-three"><small>POST 03</small><strong>One bed. Ten years of unfinished history.</strong><i></i></div>
+              <div class="account-dock"><small>YOUR TIKTOK ACCOUNTS</small><strong>@avowinwinter + 1</strong><span>RUNNING · NEXT 7:00 PM</span></div>
+              <div class="proof-flag"><strong>One operator result:</strong> 100K+ daily TikTok views and a Top 1,000 Kindle rank. Individual result. Not guaranteed.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scroll-note">SCROLL TO DIRECT THE CAMPAIGN</div>
+      </div>
+    </section>
+
+    <section class="needs-section" id="how" aria-label="What a MIRA Bucket needs">
+      <div class="needs-intro">
+        <div><div class="label">The whole system</div><h2>A Bucket needs only two things.</h2></div>
+        <p>Content tells MIRA what it may post. TikTok accounts tell MIRA where it may post. Put both into a Bucket, choose the rhythm, and MIRA becomes the content engine and admin desk for your book marketing.</p>
+      </div>
+      <div class="needs-flow">
+        <article class="need">
+          <span class="need-index">01 · CONTENT</span>
+          <h3>The post ingredients.</h3>
+          <p>Bring them finished, make them in MIRA, or mix both.</p>
+          <div class="ingredient-list">
+            <div class="ingredient"><b>A</b><span>On-screen text<small>The hook and story words readers see in the post</small></span></div>
+            <div class="ingredient"><b>B</b><span>Background<small>A still image or a short video</small></span></div>
+            <div class="ingredient"><b>C</b><span>Caption<small>The description that accompanies the TikTok post</small></span></div>
+            <div class="ingredient"><b>D</b><span>Hashtags and style<small>Your tag pool, font, color, box, and position</small></span></div>
+          </div>
+        </article>
+        <div class="need-divider" aria-hidden="true"></div>
+        <article class="need">
+          <span class="need-index">02 · ACCOUNTS</span>
+          <h3>The places it posts.</h3>
+          <p>Connect one or more TikTok accounts you already own. Buying or renting an account from MIRA is not required.</p>
+          <div class="ingredient-list">
+            <div class="ingredient"><b>A</b><span>Choose the accounts<small>The Bucket posts only to the handles you select</small></span></div>
+            <div class="ingredient"><b>B</b><span>Choose the cadence<small>Posts per day, exact times, and how long to run</small></span></div>
+            <div class="ingredient"><b>C</b><span>Choose the landing<small>Publish automatically or send to TikTok Draft</small></span></div>
+          </div>
+        </article>
+        <div class="need-divider" aria-hidden="true"></div>
+        <article class="need outcome">
+          <span class="need-index">RESULT · BUCKET</span>
+          <h3>Approved variety, on schedule.</h3>
+          <p>MIRA pairs approved text with approved backgrounds, varies captions and hashtags, and follows the exact schedule you set.</p>
+          <div class="ingredient-list">
+            <div class="ingredient"><b>01</b><span>Stock the pools<small>Your text decks and your backgrounds</small></span></div>
+            <div class="ingredient"><b>02</b><span>Preview the runway<small>See how much variety and time you have</small></span></div>
+            <div class="ingredient"><b>03</b><span>Turn it on<small>Pause, resume, or stop whenever you want</small></span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section source-section" id="content">
+      <div class="section-head">
+        <div><div class="label">Content, your way</div><h2 class="section-title">Start with what you already have.</h2></div>
+        <p class="section-lede">An indexed book is never required. Use finished assets, start with one scene, or let Booketeer map the whole manuscript. All three paths lead to the same place: approved content ready for a Bucket.</p>
+      </div>
+      <div class="source-switch" role="tablist" aria-label="Choose your content starting point">
+        <button type="button" role="tab" aria-selected="false" data-source="own">I already have content</button>
+        <button type="button" role="tab" aria-selected="true" data-source="create">I need content</button>
+      </div>
+      <div class="source-panel" aria-live="polite">
+        <div class="source-head"><h3 data-source-title>Use one scene—or the whole manuscript.</h3><div><p data-source-copy>You can paste one scene yourself for free. If you want the hands-off route, Booketeer reads the whole manuscript and prepares the strongest material for MIRA.</p></div></div>
+        <div class="source-path" data-source-steps>
+          <article class="source-step"><small>PATH A</small><strong>One scene · Free</strong><p>Paste one moment and answer a few short questions. No whole-book index needed.</p></article>
+          <article class="source-step"><small>PATH B</small><strong>Booketeer · Optional</strong><p>Upload the manuscript once. Booketeer catalogs and ranks the story material.</p></article>
+          <article class="source-step"><small>MIRA</small><strong>Create what is missing</strong><p>Generate slide decks and images with on-screen text, captions, and hashtags.</p></article>
+          <article class="source-step"><small>YOU</small><strong>Approve the ingredients</strong><p>Choose what enters the Bucket. Videos are uploaded by you.</p></article>
+        </div>
+        <div class="source-note" data-source-note><span><strong>No content yet?</strong> Start with one scene now while Booketeer works in the background.</span><span>Generation is optional · Videos are bring-your-own</span></div>
+        <div class="booketeer-bridge" data-booketeer-bridge>
+          <article class="engine-block"><small>BOOKETEER · OPTIONAL SETUP</small><h4>Finds what to say.</h4><p>Reads the whole manuscript, catalogs every scene, then ranks the strongest moments and structures the characters, settings, tropes, emotions, and selling angles.</p></article>
+          <div class="bridge-arrow" aria-hidden="true">→</div>
+          <article class="engine-block"><small>MIRA · CONTENT + ADMIN ENGINE</small><h4>Turns it into marketing.</h4><p>Uses that book understanding to help create assets, stores every ingredient, combines them in Buckets, schedules the campaign, publishes, and tracks the results.</p></article>
+        </div>
+        <div class="booketeer-facts" data-booketeer-facts>
+          <div class="booketeer-fact"><b>No published book required</b><span>A manuscript can be prepared before release.</span></div>
+          <div class="booketeer-fact"><b>Not required for MIRA</b><span>Skip it when you bring content or add scenes yourself.</span></div>
+          <div class="booketeer-fact"><b>Separate one-time purchase</b><span>Per book; your exact price is shown before upload.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section bucket-section" id="buckets">
+      <div class="section-head">
+        <div><div class="label">The autopilot</div><h2 class="section-title">Stock it once. Set the rhythm.</h2></div>
+        <p class="section-lede">A Bucket is the goal: two approved pools—on-screen text and backgrounds—plus your accounts and schedule. MIRA combines the pools for variety and keeps posting until you pause, stop, or reach the end.</p>
+      </div>
+
+      <div class="bucket-workspace" data-testid="bucket-workspace">
+        <div class="bucket-copy">
+          <div class="workspace-top"><span>A VOW IN WINTER</span><span class="status" data-bucket-status>RUNNING</span></div>
+          <h3>Launch week</h3>
+          <p>Every ingredient below was approved before launch. MIRA varies the combinations; your schedule controls what publishes.</p>
+          <div class="approved-list">
+            <div class="approved-row"><b>TXT</b><strong>12 on-screen text decks</strong><small>POOL A</small></div>
+            <div class="approved-row"><b>BG</b><strong>8 image and video backgrounds</strong><small>POOL B</small></div>
+            <div class="approved-row"><b>CAP</b><strong>Caption pools + 14 hashtags</strong><small>DESIGN</small></div>
+          </div>
+        </div>
+        <div class="bucket-controls">
+          <div class="control-block">
+            <span class="control-label">POSTING RHYTHM</span>
+            <div class="segment" role="group" aria-label="Posting rhythm">
+              <button type="button" aria-pressed="false" data-cadence="1">1 per day</button>
+              <button type="button" aria-pressed="true" data-cadence="2">2 per day</button>
+              <button type="button" aria-pressed="false" data-cadence="3">3 per day</button>
+            </div>
+          </div>
+          <div class="control-block">
+            <span class="control-label">CONNECTED ACCOUNTS</span>
+            <div class="account-chips"><span class="account-chip">@avowinwinter</span><span class="account-chip">@slowburnreads</span><span class="account-chip">@romanceafterdark</span></div>
+          </div>
+          <div class="next-post">
+            <div><small>NEXT POST</small><strong data-next-post>Today at 7:00 PM</strong></div>
+            <button class="button button-primary run-button" type="button" data-testid="bucket-toggle">Pause Bucket</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section hub-section">
+      <div class="section-head">
+        <div><div class="label">Content engine + admin desk</div><h2 class="section-title">Make it. Organize it. Run it.</h2></div>
+        <p class="section-lede">MIRA is where the creative ingredients and the daily administration meet: assets, Buckets, calendars, accounts, publishing, and results in one place.</p>
+      </div>
+
+      <div class="hub" data-testid="hub">
+        <div class="hub-tabs" role="tablist" aria-label="MIRA marketing hub">
+          <button class="hub-tab" type="button" role="tab" aria-selected="true" data-hub="assets">Assets</button>
+          <button class="hub-tab" type="button" role="tab" aria-selected="false" data-hub="buckets">Buckets</button>
+          <button class="hub-tab" type="button" role="tab" aria-selected="false" data-hub="calendar">Calendar</button>
+          <button class="hub-tab" type="button" role="tab" aria-selected="false" data-hub="results">Results</button>
+        </div>
+        <div class="hub-panel" aria-live="polite">
+          <div class="panel-head"><h3 data-hub-title>Every ingredient, organized.</h3><p data-hub-copy>Store generated and uploaded content together. A Bucket can use both without caring where they came from.</p></div>
+          <div class="panel-content" data-hub-items>
+            <article class="panel-item"><small>TEXT</small><strong>Slide decks</strong><p>Generated, written manually, or imported from a text file</p></article>
+            <article class="panel-item"><small>BACKGROUNDS</small><strong>Images + videos</strong><p>Generated images beside your own uploaded files</p></article>
+            <article class="panel-item"><small>POST COPY</small><strong>Captions + hashtags</strong><p>Ready to vary inside a Bucket</p></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section control-section">
+      <div class="control-grid">
+        <div class="control-copy">
+          <div class="label">You stay in control</div>
+          <h2>Your accounts. Your choice.</h2>
+          <p>Connect TikTok accounts you already own. You do not need to buy or rent one from MIRA. Choose full autopilot with Direct Post, or send each scheduled post to TikTok Draft for a final review.</p>
+          <div class="delivery-switch" role="tablist" aria-label="Delivery mode">
+            <button type="button" role="tab" aria-selected="true" data-delivery="direct">Direct Post</button>
+            <button type="button" role="tab" aria-selected="false" data-delivery="draft">TikTok Draft</button>
+          </div>
+          <div class="delivery-explain" aria-live="polite"><strong data-delivery-title>MIRA publishes on schedule.</strong><p data-delivery-copy>Approved posts go live automatically at the cadence you chose. Pause the Bucket whenever you want.</p></div>
+        </div>
+        <div class="account-list" aria-label="Example connected accounts">
+          <div class="account-row"><i></i><div><strong>@avowinwinter</strong><small>DIRECT POST</small></div><span>READY</span></div>
+          <div class="account-row"><i></i><div><strong>@slowburnreads</strong><small>TIKTOK DRAFT</small></div><span>READY</span></div>
+          <div class="account-row"><i></i><div><strong>@romanceafterdark</strong><small>DIRECT POST</small></div><span>READY</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section proof-section">
+      <div class="proof-grid">
+        <div class="proof-meta">CURRENT OPERATOR EXAMPLE<br>INDIVIDUAL RESULT</div>
+        <div><blockquote class="proof-quote">“MIRA keeps the campaign moving so I can focus on writing the next book.”</blockquote><p class="proof-note">One expanded operator setup reported 100K+ daily TikTok views and a Top 1,000 Kindle rank. This is an individual result, not a guarantee. Standard self-serve plans use lower account limits.</p></div>
+      </div>
+    </section>
+
+    <section class="section plans-section" id="plans">
+      <div class="section-head">
+        <div><div class="label">No bundled surprises</div><h2 class="section-title">Pay for the parts you choose.</h2></div>
+        <p class="section-lede">The monthly MIRA plan, optional content generation, optional Booketeer indexing, and optional managed accounts are separate. Bringing your own content and accounts is always allowed.</p>
+      </div>
+      <div class="plans">
+        <article class="plan"><div><h3>Free</h3><span class="plan-price">$0</span></div><p class="plan-copy">Try the content tools and connect <span>1 TikTok account you own</span>. Buckets require a paid plan.</p><button class="button button-outline" type="button" data-open-auth="signup">Create free account</button></article>
+        <article class="plan"><div><h3>Pro</h3><span class="plan-price">$29 / MONTH</span></div><p class="plan-copy">Connect <span>up to 10 accounts you own</span> and run up to 2 Buckets.</p><button class="button button-primary" type="button" data-open-auth="signup">Choose Pro</button></article>
+        <article class="plan"><div><h3>Studio</h3><span class="plan-price">$59 / MONTH</span></div><p class="plan-copy">Connect <span>up to 20 accounts you own</span> and run up to 5 Buckets.</p><button class="button button-outline" type="button" data-open-auth="signup">Choose Studio</button></article>
+      </div>
+      <div class="price-clarity">
+        <article class="price-extra"><small>BRING YOUR OWN</small><strong>$0 generation credits</strong><p>Write or import a manual text deck and upload your own images or videos without spending a generation credit.</p></article>
+        <article class="price-extra"><small>CREATE IN MIRA</small><strong>1 credit per generated asset</strong><p>Generating one slide deck or one image uses one credit. MIRA does not generate raw videos.</p></article>
+        <article class="price-extra"><small>BOOKETEER · OPTIONAL</small><strong>$49–$99 once per book</strong><p>A separate whole-manuscript indexing purchase. The exact price depends on your plan and eligibility and is shown before upload.</p></article>
+      </div>
+    </section>
+
+    <section class="section faq-section" id="faq">
+      <div class="faq-layout">
+        <div><div class="label">Plain answers</div><h2>No more guessing what MIRA means.</h2></div>
+        <div class="faq-list">
+          <div class="faq-item"><button class="faq-q" type="button" aria-expanded="true"><span>Do I need a Booketeer-indexed book?</span><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button><div class="faq-a"><div><p>No. Bring finished content, write or import your own slide text, paste one scene manually, or use Booketeer for the whole manuscript. Booketeer is the optional hands-off path, not a requirement.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false"><span>What does Booketeer do—and what does MIRA do?</span><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button><div class="faq-a"><div><p>Booketeer reads the whole manuscript, catalogs and ranks scenes, and structures the characters, settings, tropes, emotions, and marketing angles. MIRA uses that understanding to help create assets, organize the campaign, publish through Buckets, and track results.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false"><span>Can I bring all my own content?</span><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button><div class="faq-a"><div><p>Yes. Bring or import your on-screen text, upload images and videos, add captions and hashtags, then stock a Bucket. You are never required to generate content in MIRA.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false"><span>What does MIRA generate?</span><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button><div class="faq-a"><div><p>MIRA can generate slide decks and images, including book-aware on-screen text and caption options. Raw videos are uploaded by you; MIRA can place text over them and use them in a Bucket.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false"><span>Do I need to buy or rent TikTok accounts?</span><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button><div class="faq-a"><div><p>No. Connect accounts you already own. Optional managed accounts may be offered separately where available, but they are never required to use MIRA or its Buckets.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false"><span>What exactly does “autopilot” mean?</span><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button><div class="faq-a"><div><p>MIRA uses only the content pools you approved, follows the cadence and accounts you chose, and either publishes automatically with Direct Post or prepares TikTok Drafts for your review. You can pause, resume, or stop the Bucket.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false"><span>How is pricing divided?</span><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button><div class="faq-a"><div><p>MIRA is the monthly software plan. Generated slide decks and images use credits. Booketeer is an optional one-time purchase per book. Extra account slots and optional managed accounts are separate. Bringing your own assets and accounts does not add those charges.</p></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final">
+      <div class="final-inner"><h2>Bring it or make it. <span>Then let the Bucket run it.</span></h2><p>Start with one finished post, one scene, or one manuscript. Connect one account. MIRA will show you the shortest path to a running campaign.</p><button class="button button-primary" type="button" data-open-auth="signup">Create free account</button></div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand" href="#top"><span class="mark" aria-hidden="true">MIR</span><span>MIRA</span></a>
+    <span>Marketing Indie Resource Accelerator</span>
+    <div class="footer-actions"><button type="button" data-open-auth="signin">Sign in</button><button type="button" data-open-review>Prototype notes</button></div>
+  </footer>
+
+  <div class="modal-shell" data-auth-shell aria-hidden="true">
+    <button class="modal-backdrop" type="button" data-close-auth aria-label="Close sign-in window"></button>
+    <section class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+      <div class="modal-top"><span class="brand"><span class="mark" aria-hidden="true">MIR</span><span>MIRA</span></span><button class="modal-close" type="button" data-close-auth aria-label="Close"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button></div>
+      <div class="auth-body" data-auth-body></div>
+    </section>
+  </div>
+
+  <div class="modal-shell" data-review-shell aria-hidden="true">
+    <button class="modal-backdrop" type="button" data-close-review aria-label="Close prototype notes"></button>
+    <section class="auth-modal review-dialog" role="dialog" aria-modal="true" aria-labelledby="review-title">
+      <div class="modal-top"><span class="brand"><span class="mark" aria-hidden="true">MIR</span><span>MIRA</span></span><button class="modal-close" type="button" data-close-review aria-label="Close"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button></div>
+      <div class="review-body"><h2 id="review-title">Prototype notes</h2><h3>The corrected product model</h3><p>The page now starts with the actual outcome: a running Bucket. It defines the two requirements—content and TikTok accounts—before introducing optional tools. Booketeer sits inside the “I need content” path because it finds and structures manuscript material; MIRA creates and stores assets, runs Buckets, publishes, and measures.</p><h3>Bring-your-own is first-class</h3><p>Authors can write or import on-screen text, upload images and videos, provide captions and hashtags, and connect accounts they already own. Generation, Booketeer, and managed accounts are optional and priced separately.</p><h3>The corrected customer journey</h3><p>Primary homepage actions open Create account. Sign in is reserved for returning authors. If a new author uses Sign in anyway, the prototype explains why no link arrived and carries the email directly into account creation.</p><h3>Production security decision</h3><p>An unauthenticated “no account found” response can reveal which emails use MIRA. The safest production flow is one neutral “Continue with email” action that sends either a sign-in or creation link while showing the same browser response. This prototype demonstrates Sebastian’s requested explicit state so the team can evaluate the experience.</p></div>
+    </section>
+  </div>
+
+  <script>
+    (() => {
+      document.documentElement.dataset.runtimeErrors = '0';
+      const runtimeErrors = [];
+      const registerError = (message) => {
+        runtimeErrors.push(String(message));
+        document.documentElement.dataset.runtimeErrors = String(runtimeErrors.length);
+      };
+      addEventListener('error', (event) => registerError(event.error || event.message || 'Unknown runtime error'));
+      addEventListener('unhandledrejection', (event) => registerError(event.reason || 'Unhandled promise rejection'));
+
+      let ticking = false;
+      const updateScroll = () => {
+        const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+        document.documentElement.style.setProperty('--scroll', Math.min(1, Math.max(0, scrollY / max)).toFixed(4));
+        ticking = false;
+      };
+      addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(updateScroll); } }, { passive: true });
+      updateScroll();
+
+      const cinematic = document.querySelector('.cinematic');
+      const storySteps = [...document.querySelectorAll('[data-jump-stage]')];
+      const stageTargets = [0.02, .29, .54, .79];
+      let storyTicking = false;
+      const updateStory = () => {
+        if (!cinematic) return;
+        const travel = Math.max(1, cinematic.offsetHeight - innerHeight);
+        const progress = Math.min(1, Math.max(0, (scrollY - cinematic.offsetTop) / travel));
+        const stage = Math.min(3, Math.floor(progress * 4));
+        cinematic.style.setProperty('--story-progress', progress.toFixed(4));
+        if (cinematic.dataset.storyStage !== String(stage)) {
+          cinematic.dataset.storyStage = String(stage);
+          storySteps.forEach((step, index) => {
+            step.classList.toggle('is-current', index === stage);
+            if (index === stage) step.setAttribute('aria-current', 'step');
+            else step.removeAttribute('aria-current');
+          });
+        }
+        storyTicking = false;
+      };
+      addEventListener('scroll', () => {
+        if (!storyTicking) {
+          storyTicking = true;
+          requestAnimationFrame(updateStory);
+        }
+      }, { passive: true });
+      addEventListener('resize', updateStory, { passive: true });
+      storySteps.forEach((step) => {
+        step.addEventListener('click', () => {
+          const stage = Number(step.dataset.jumpStage);
+          const travel = Math.max(1, cinematic.offsetHeight - innerHeight);
+          scrollTo({ top: cinematic.offsetTop + travel * stageTargets[stage], behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+        });
+      });
+      updateStory();
+
+      const sourceData = {
+        own: {
+          title: 'Bring the ingredients you already trust.',
+          copy: 'No Booketeer and no MIRA generation are required. Write or import your slide text, upload your images or videos, add captions and hashtags, then stock the Bucket.',
+          steps: [
+            ['TEXT','Write or import the words','Build a manual slide deck or import finished copy from a text file.'],
+            ['BACKGROUND','Upload images or videos','Use your own stills, book art, trailers, edits, or short vertical videos.'],
+            ['POST COPY','Add captions and hashtags','Save one or more captions with each deck and create the Bucket hashtag pool.'],
+            ['BUCKET','Choose what may post','Select the approved text and backgrounds, then set accounts and schedule.']
+          ],
+          note: '<span><strong>Nothing to regenerate.</strong> MIRA can simply organize and autopilot what you already made.</span><span>Manual decks + uploads · 0 generation credits</span>',
+          booketeer: false
+        },
+        create: {
+          title: 'Use one scene—or the whole manuscript.',
+          copy: 'You can paste one scene yourself for free. If you want the hands-off route, Booketeer reads the whole manuscript and prepares the strongest material for MIRA.',
+          steps: [
+            ['PATH A','One scene · Free','Paste one moment and answer a few short questions. No whole-book index needed.'],
+            ['PATH B','Booketeer · Optional','Upload the manuscript once. Booketeer catalogs and ranks the story material.'],
+            ['MIRA','Create what is missing','Generate slide decks and images with on-screen text, captions, and hashtags.'],
+            ['YOU','Approve the ingredients','Choose what enters the Bucket. Videos are uploaded by you.']
+          ],
+          note: '<span><strong>No content yet?</strong> Start with one scene now while Booketeer works in the background.</span><span>Generation is optional · Videos are bring-your-own</span>',
+          booketeer: true
+        }
+      };
+      const renderSource = (key) => {
+        const data = sourceData[key];
+        document.querySelector('[data-source-title]').textContent = data.title;
+        document.querySelector('[data-source-copy]').textContent = data.copy;
+        document.querySelector('[data-source-steps]').innerHTML = data.steps.map((item) => `<article class="source-step"><small>${item[0]}</small><strong>${item[1]}</strong><p>${item[2]}</p></article>`).join('');
+        document.querySelector('[data-source-note]').innerHTML = data.note;
+        document.querySelector('[data-booketeer-bridge]').hidden = !data.booketeer;
+        document.querySelector('[data-booketeer-facts]').hidden = !data.booketeer;
+      };
+      document.querySelectorAll('[data-source]').forEach((button) => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-source]').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
+          renderSource(button.dataset.source);
+        });
+      });
+
+      let bucketRunning = true;
+      const bucketToggle = document.querySelector('[data-testid="bucket-toggle"]');
+      const bucketStatus = document.querySelector('[data-bucket-status]');
+      const nextPost = document.querySelector('[data-next-post]');
+      bucketToggle.addEventListener('click', () => {
+        bucketRunning = !bucketRunning;
+        bucketToggle.textContent = bucketRunning ? 'Pause Bucket' : 'Resume Bucket';
+        bucketToggle.classList.toggle('paused', !bucketRunning);
+        bucketStatus.textContent = bucketRunning ? 'RUNNING' : 'PAUSED';
+        nextPost.textContent = bucketRunning ? 'Today at 7:00 PM' : 'Waiting for you';
+      });
+      document.querySelectorAll('[data-cadence]').forEach((button) => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-cadence]').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+          const cadence = Number(button.dataset.cadence);
+          nextPost.textContent = bucketRunning ? (cadence === 1 ? 'Tomorrow at 9:00 AM' : cadence === 2 ? 'Today at 7:00 PM' : 'Today at 5:00 PM') : 'Waiting for you';
+        });
+      });
+
+      const hubData = {
+        assets: { title: 'Every ingredient, organized.', copy: 'Store generated and uploaded content together. A Bucket can use both without caring where they came from.', items: [['TEXT','Slide decks','Generated, written manually, or imported from a text file'],['BACKGROUNDS','Images + videos','Generated images beside your own uploaded files'],['POST COPY','Captions + hashtags','Ready to vary inside a Bucket']] },
+        buckets: { title: 'Your campaigns at a glance.', copy: 'See what is active, what is paused, and which accounts each Bucket is serving.', items: [['RUNNING','Launch week','2 posts per day'],['PAUSED','Backlist revival','Ready when you are'],['ACCOUNTS','3 connected','All connections healthy']] },
+        calendar: { title: 'Know what posts next.', copy: 'See the campaign rhythm without opening every TikTok account or maintaining a spreadsheet.', items: [['TODAY','7:00 PM','@avowinwinter'],['TOMORROW','9:00 AM','@slowburnreads'],['TOMORROW','7:00 PM','@romanceafterdark']] },
+        results: { title: 'See what is working.', copy: 'Follow content performance and connected book signals, then adjust the campaign with evidence.', items: [['POSTS','14 this week','Across connected accounts'],['ENGAGEMENT','Views and reactions','Available after publishing'],['BOOK','Rank and finances','Shown when connected']] }
+      };
+      document.querySelectorAll('[data-hub]').forEach((button) => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-hub]').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
+          const data = hubData[button.dataset.hub];
+          document.querySelector('[data-hub-title]').textContent = data.title;
+          document.querySelector('[data-hub-copy]').textContent = data.copy;
+          document.querySelector('[data-hub-items]').innerHTML = data.items.map((item) => `<article class="panel-item"><small>${item[0]}</small><strong>${item[1]}</strong><p>${item[2]}</p></article>`).join('');
+        });
+      });
+
+      const deliveryData = {
+        direct: ['MIRA publishes on schedule.','Approved posts go live automatically at the cadence you chose. Pause the Bucket whenever you want.'],
+        draft: ['MIRA prepares the final draft.','The post arrives in TikTok for your review. Make any last change, then publish when you decide.']
+      };
+      document.querySelectorAll('[data-delivery]').forEach((button) => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-delivery]').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
+          const data = deliveryData[button.dataset.delivery];
+          document.querySelector('[data-delivery-title]').textContent = data[0];
+          document.querySelector('[data-delivery-copy]').textContent = data[1];
+        });
+      });
+
+      document.querySelectorAll('.faq-q').forEach((button) => {
+        button.addEventListener('click', () => {
+          const open = button.getAttribute('aria-expanded') !== 'true';
+          document.querySelectorAll('.faq-q').forEach((item) => item.setAttribute('aria-expanded','false'));
+          button.setAttribute('aria-expanded', String(open));
+        });
+      });
+
+      const authShell = document.querySelector('[data-auth-shell]');
+      const authBody = document.querySelector('[data-auth-body]');
+      let authState = 'signin';
+      let authEmail = '';
+      let lastFocus = null;
+      const validEmail = (value) => /\S+@\S+\.\S+/.test(value);
+      const esc = (value) => String(value).replace(/[&<>'"]/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+
+      const renderAuth = () => {
+        const email = esc(authEmail);
+        if (authState === 'signin') {
+          authBody.innerHTML = `
+            <span class="auth-kicker">WELCOME BACK</span>
+            <h2 id="auth-title">Sign in to MIRA</h2>
+            <p>Use the email you entered when you created your MIRA account.</p>
+            <form data-signin-form>
+              <label class="field"><span>EMAIL ADDRESS</span><input data-auth-email type="email" autocomplete="email" required placeholder="you@yourdomain.com" value="${email}"></label>
+              <button class="button button-dark auth-submit" type="submit">Send my sign-in link</button>
+            </form>
+            <div class="auth-separator">NEW TO MIRA?</div>
+            <button class="switch-path" type="button" data-switch-signup>Create your free account</button>
+            <details class="test-details"><summary>TESTING THIS PROTOTYPE</summary><p>Use member@mira.test to simulate an existing account. Any other valid email demonstrates the new-author recovery flow.</p></details>`;
+          authBody.querySelector('[data-signin-form]').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const input = authBody.querySelector('[data-auth-email]');
+            authEmail = input.value.trim().toLowerCase();
+            if (!validEmail(authEmail)) return;
+            const submit = event.currentTarget.querySelector('button[type="submit"]');
+            submit.disabled = true;
+            submit.textContent = 'Checking account…';
+            setTimeout(() => { authState = authEmail === 'member@mira.test' ? 'signin-success' : 'no-account'; renderAuth(); }, 650);
+          });
+          authBody.querySelector('[data-switch-signup]').addEventListener('click', () => { authState = 'signup'; renderAuth(); });
+          setTimeout(() => authBody.querySelector('[data-auth-email]')?.focus(), 40);
+        } else if (authState === 'no-account') {
+          authBody.innerHTML = `
+            <span class="auth-kicker">NO ACCOUNT FOUND</span>
+            <h2 id="auth-title">You’re new here.</h2>
+            <p>There isn’t a MIRA account associated with <strong>${email}</strong>.</p>
+            <div class="alert"><strong>No sign-in email was sent.</strong><p>Create your free account now, or try a different email. You will not have to enter the address again.</p></div>
+            <div class="auth-actions"><button class="button button-dark" type="button" data-create-with-email>Create free account with this email</button><button class="button button-paper" type="button" data-try-email>Try a different email</button></div>`;
+          authBody.querySelector('[data-create-with-email]').addEventListener('click', () => { authState = 'signup'; renderAuth(); });
+          authBody.querySelector('[data-try-email]').addEventListener('click', () => { authEmail = ''; authState = 'signin'; renderAuth(); });
+          authBody.querySelector('[data-create-with-email]').focus();
+        } else if (authState === 'signup') {
+          authBody.innerHTML = `
+            <span class="auth-kicker">CREATE ACCOUNT</span>
+            <h2 id="auth-title">Create your MIRA account</h2>
+            <p>Start free. We’ll email a one-time link that activates your account and signs you in.</p>
+            <form data-signup-form>
+              <label class="field"><span>EMAIL ADDRESS</span><input data-auth-email type="email" autocomplete="email" required placeholder="you@yourdomain.com" value="${email}"></label>
+              <label class="terms"><input data-terms type="checkbox" required><span>I agree to the Terms of Service and Privacy Policy.</span></label>
+              <button class="button button-dark auth-submit" type="submit">Create account and email my link</button>
+            </form>
+            <p class="form-note">No password. No waiting list. Your link expires in 15 minutes.</p>
+            <div class="auth-separator">ALREADY HAVE AN ACCOUNT?</div>
+            <button class="switch-path" type="button" data-switch-signin>Sign in instead</button>`;
+          authBody.querySelector('[data-signup-form]').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const input = authBody.querySelector('[data-auth-email]');
+            authEmail = input.value.trim().toLowerCase();
+            if (!validEmail(authEmail) || !authBody.querySelector('[data-terms]').checked) return;
+            const submit = event.currentTarget.querySelector('button[type="submit"]');
+            submit.disabled = true;
+            submit.textContent = 'Creating account…';
+            setTimeout(() => { authState = 'signup-success'; renderAuth(); }, 700);
+          });
+          authBody.querySelector('[data-switch-signin]').addEventListener('click', () => { authState = 'signin'; renderAuth(); });
+          setTimeout(() => authBody.querySelector('[data-auth-email]')?.focus(), 40);
+        } else if (authState === 'signin-success') {
+          authBody.innerHTML = `
+            <div class="success-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.2 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span class="auth-kicker">SIGN-IN LINK SENT</span>
+            <h2 id="auth-title">Check your email</h2>
+            <p>We sent a sign-in link to <strong>${email}</strong>.</p>
+            <ul class="success-list"><li><b>01</b><span>Look for an email called “Sign in to MIRA.”</span></li><li><b>02</b><span>Open the link within 15 minutes.</span></li><li><b>03</b><span>You’ll return to your MIRA Library.</span></li></ul>
+            <div class="auth-actions"><button class="button button-dark" type="button" data-resend>Resend link</button><button class="button button-paper" type="button" data-try-email>Use a different email</button></div>
+            <p class="form-note" data-resend-note></p>`;
+          authBody.querySelector('[data-resend]').addEventListener('click', () => { authBody.querySelector('[data-resend-note]').textContent = 'A fresh link has been sent.'; });
+          authBody.querySelector('[data-try-email]').addEventListener('click', () => { authEmail = ''; authState = 'signin'; renderAuth(); });
+        } else {
+          authBody.innerHTML = `
+            <div class="success-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.2 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span class="auth-kicker">ACCOUNT CREATED</span>
+            <h2 id="auth-title">Check your inbox</h2>
+            <p>Your MIRA account is ready to activate. We sent a link to <strong>${email}</strong>.</p>
+            <ul class="success-list"><li><b>01</b><span>Look for “Sign in to MIRA.”</span></li><li><b>02</b><span>Click the link within 15 minutes.</span></li><li><b>03</b><span>Your account activates and opens automatically.</span></li></ul>
+            <div class="auth-actions"><button class="button button-dark" type="button" data-resend>Resend activation link</button><button class="button button-paper" type="button" data-close-auth-inner>Done</button></div>
+            <p class="form-note" data-resend-note></p>`;
+          authBody.querySelector('[data-resend]').addEventListener('click', () => { authBody.querySelector('[data-resend-note]').textContent = 'A fresh activation link has been sent.'; });
+          authBody.querySelector('[data-close-auth-inner]').addEventListener('click', closeAuth);
+        }
+      };
+
+      function openAuth(state) {
+        lastFocus = document.activeElement;
+        authState = state;
+        authEmail = '';
+        renderAuth();
+        authShell.classList.add('open');
+        authShell.setAttribute('aria-hidden','false');
+        document.body.classList.add('modal-open');
+      }
+      function closeAuth() {
+        authShell.classList.remove('open');
+        authShell.setAttribute('aria-hidden','true');
+        document.body.classList.remove('modal-open');
+        if (lastFocus) lastFocus.focus();
+      }
+      document.querySelectorAll('[data-open-auth]').forEach((button) => button.addEventListener('click', () => openAuth(button.dataset.openAuth)));
+      document.querySelectorAll('[data-close-auth]').forEach((button) => button.addEventListener('click', closeAuth));
+
+      const reviewShell = document.querySelector('[data-review-shell]');
+      const openReview = () => { reviewShell.classList.add('open'); reviewShell.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open'); setTimeout(() => reviewShell.querySelector('[data-close-review]').focus(),40); };
+      const closeReview = () => { reviewShell.classList.remove('open'); reviewShell.setAttribute('aria-hidden','true'); document.body.classList.remove('modal-open'); };
+      document.querySelector('[data-open-review]').addEventListener('click', openReview);
+      document.querySelectorAll('[data-close-review]').forEach((button) => button.addEventListener('click', closeReview));
+      addEventListener('keydown', (event) => { if (event.key === 'Escape') { if (authShell.classList.contains('open')) closeAuth(); if (reviewShell.classList.contains('open')) closeReview(); } });
+    })();
+  </script>
+</body>
+</html>
