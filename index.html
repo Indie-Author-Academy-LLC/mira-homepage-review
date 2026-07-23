@@ -1593,10 +1593,10 @@
       border-radius: inherit;
       opacity: 0;
     }
-    .cinematic[data-story-stage="3"] .cinema-world.has-cinematic-video + .cinematic-play-light {
+    .cinematic[data-story-stage="3"].has-run-video .cinema-world + .cinematic-play-light {
       animation: play-ignite 2.4s cubic-bezier(.16, 1, .3, 1) .08s both;
     }
-    .cinematic[data-story-stage="3"] .cinema-world.has-cinematic-video + .cinematic-play-light::after {
+    .cinematic[data-story-stage="3"].has-run-video .cinema-world + .cinematic-play-light::after {
       animation: play-ripple 1.15s ease-out .38s 2;
     }
     @keyframes play-ignite {
