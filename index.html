@@ -1831,6 +1831,29 @@
       padding-top: 3rem;
       border-top: 1px solid rgba(28,12,5,.22);
     }
+    .proof-starting-point {
+      display: grid;
+      grid-template-columns: auto repeat(3,minmax(0,1fr));
+      margin: 0 0 1.8rem;
+      border-top: 1px solid rgba(28,12,5,.24);
+      border-bottom: 1px solid rgba(28,12,5,.24);
+      font: 750 .62rem/1.4 var(--mono);
+      letter-spacing: .04em;
+    }
+    .proof-starting-point strong,
+    .proof-starting-point span {
+      display: flex;
+      min-height: 3.5rem;
+      align-items: center;
+      padding: .75rem 1rem;
+      border-right: 1px solid rgba(28,12,5,.24);
+    }
+    .proof-starting-point strong {
+      padding-left: 0;
+      color: #57210e;
+      letter-spacing: .11em;
+    }
+    .proof-starting-point span:last-child { border-right: 0; }
     .proof-section-v6 .proof-note { color: #57210e; }
 
     .plans-section .price-clarity { margin-top: 2rem; }
@@ -1934,6 +1957,15 @@
       .metric { min-height: 8.5rem; border-right: 0; border-bottom: 1px solid var(--line-light); }
       .metric:last-child { border-bottom: 0; }
       .metric strong { margin-top: 2.3rem; }
+      .proof-starting-point { grid-template-columns: 1fr; }
+      .proof-starting-point strong,
+      .proof-starting-point span {
+        min-height: 3rem;
+        padding: .7rem 0;
+        border-right: 0;
+        border-bottom: 1px solid rgba(28,12,5,.24);
+      }
+      .proof-starting-point span:last-child { border-bottom: 0; }
       .plan { grid-template-columns: 1fr; gap: .9rem; padding: 1.7rem 0; }
       .compact-questions h3 { font-size: clamp(3.1rem, 15vw, 4.7rem); }
       .final h2 { font-size: clamp(3.5rem, 16vw, 5.3rem); }
@@ -2222,7 +2254,16 @@
       </div>
       <div class="proof-grid">
         <div class="proof-meta">ONE OPERATOR EXAMPLE<br>RESULTS VARY</div>
-        <div><blockquote class="proof-quote">100,000+ daily TikTok views. Kindle Top 1,000.</blockquote><p class="proof-note">One operator generated more than 100,000 daily TikTok views and reached the Kindle Top 1,000 using an expanded setup. Results vary.</p></div>
+        <div>
+          <div class="proof-starting-point" aria-label="Starting point">
+            <strong>STARTING POINT</strong>
+            <span>0 author following</span>
+            <span>Brand-new book series</span>
+            <span>A few public reviews</span>
+          </div>
+          <blockquote class="proof-quote">100,000+ daily TikTok views. Kindle Top 1,000.</blockquote>
+          <p class="proof-note">One operator generated more than 100,000 daily TikTok views and reached the Kindle Top 1,000 using an expanded setup. Results vary.</p>
+        </div>
       </div>
     </section>
 
