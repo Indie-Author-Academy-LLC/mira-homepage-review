@@ -1684,6 +1684,103 @@
     }
     .option-note strong { color: var(--paper); }
 
+    .booketeer-link {
+      color: inherit;
+      text-decoration-line: underline;
+      text-decoration-thickness: 1px;
+      text-decoration-color: var(--orange);
+      text-underline-offset: .18em;
+      transition: color .18s ease, text-decoration-color .18s ease;
+    }
+    .booketeer-link:hover {
+      color: var(--orange);
+      text-decoration-color: currentColor;
+    }
+    .booketeer-link:focus-visible {
+      border-radius: .12em;
+      outline: 2px solid var(--orange);
+      outline-offset: .18em;
+    }
+
+    .booketeer-section {
+      color: var(--ink);
+      background: #fffaf0;
+      scroll-margin-top: 5rem;
+    }
+    .booketeer-section .section-lede { color: var(--muted-dark); }
+    .booketeer-section .section-lede strong { color: var(--ink); }
+    .booketeer-path {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      border-top: 1px solid var(--line-dark);
+      border-bottom: 1px solid var(--line-dark);
+    }
+    .booketeer-stage {
+      display: flex;
+      min-height: 20rem;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+    }
+    .booketeer-stage small {
+      color: var(--orange-deep);
+      font: 750 .58rem/1 var(--mono);
+      letter-spacing: .11em;
+    }
+    .booketeer-stage h3 {
+      max-width: 10ch;
+      margin: 3rem 0 .75rem;
+      font-size: clamp(1.9rem, 3.2vw, 3.6rem);
+      line-height: .94;
+      letter-spacing: -.055em;
+    }
+    .booketeer-stage p {
+      max-width: 27rem;
+      margin: 0;
+      color: var(--muted-dark);
+      line-height: 1.6;
+    }
+    .booketeer-stage-data {
+      display: block;
+      max-width: 26rem;
+      color: var(--muted-dark);
+      font: 650 .72rem/1.65 var(--mono);
+      letter-spacing: .02em;
+    }
+    .booketeer-path-arrow {
+      display: grid;
+      width: clamp(3.5rem, 6vw, 6.5rem);
+      place-items: center;
+      border-right: 1px solid var(--line-dark);
+      border-left: 1px solid var(--line-dark);
+      color: var(--orange-deep);
+      font: 800 1.35rem/1 var(--mono);
+    }
+    .booketeer-path-arrow span { display: block; }
+    .booketeer-choice {
+      display: grid;
+      grid-template-columns: .55fr 1.45fr;
+      gap: clamp(2rem, 6vw, 7rem);
+      align-items: center;
+      margin-top: 1.5rem;
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      color: var(--paper);
+      background: var(--ink);
+    }
+    .booketeer-choice strong {
+      color: var(--orange);
+      font: 750 .62rem/1.3 var(--mono);
+      letter-spacing: .1em;
+    }
+    .booketeer-choice p {
+      max-width: 52rem;
+      margin: 0;
+      color: #aaa59c;
+      font-size: .92rem;
+      line-height: 1.65;
+    }
+    .booketeer-choice b { color: var(--paper); }
+
     .bucket-section .section-title { max-width: 9ch; }
     .bucket-section .section-lede strong { color: var(--paper); }
     .approved-row { grid-template-columns: 6.5rem 1fr auto; }
@@ -1878,6 +1975,17 @@
       .simple-card h3 { margin-top: 2.5rem; }
       .option-note { display: block; }
       .option-note span { display: block; margin-top: .4rem; }
+      .booketeer-path { grid-template-columns: 1fr; }
+      .booketeer-stage { min-height: 15rem; }
+      .booketeer-path-arrow {
+        width: 100%;
+        min-height: 3.2rem;
+        border: 0;
+        border-top: 1px solid var(--line-dark);
+        border-bottom: 1px solid var(--line-dark);
+      }
+      .booketeer-path-arrow span { transform: rotate(90deg); }
+      .booketeer-choice { grid-template-columns: 1fr; gap: .75rem; }
       .approved-row { grid-template-columns: 5.5rem 1fr; }
       .approved-row small { display: none; }
       .account-mode-copy h2 { font-size: clamp(3.25rem, 15vw, 4.8rem); }
@@ -2072,9 +2180,36 @@
       <div class="simple-grid">
         <article class="simple-card"><small>ALREADY HAVE CONTENT?</small><h3>Upload your own.</h3><p>Bring your text, images, videos, captions, and hashtags.</p></article>
         <article class="simple-card"><small>NEED HELP CREATING?</small><h3>Start with a scene.</h3><p>Paste one scene and let MIRA help create posts.</p></article>
-        <article class="simple-card"><small>WANT DEEPER ANALYSIS?</small><h3>Connect Booketeer.</h3><p>Find scenes, characters, tropes, and marketing angles from the full book.</p></article>
+        <article class="simple-card"><small>WANT DEEPER ANALYSIS?</small><h3>Use your whole book.</h3><p>Let Booketeer read the manuscript and find the scenes and angles MIRA can use.</p></article>
       </div>
       <p class="option-note"><strong>Booketeer is optional. You can use MIRA without it.</strong><span>Your content and TikTok accounts are always welcome.</span></p>
+    </section>
+
+    <section class="section booketeer-section" id="booketeer" aria-labelledby="booketeer-title">
+      <div class="section-head">
+        <div><div class="label">Book intelligence</div><h2 class="section-title" id="booketeer-title">Meet Booketeer.</h2></div>
+        <p class="section-lede"><strong>Booketeer reads your whole manuscript so MIRA does not have to guess.</strong> Upload the book once. Booketeer turns the story into marketing material MIRA can use.</p>
+      </div>
+      <div class="booketeer-path" aria-label="How Booketeer works with MIRA">
+        <article class="booketeer-stage">
+          <small>YOUR BOOK</small>
+          <div><h3>Upload your manuscript.</h3><p>Booketeer reads the complete story—not only one pasted scene.</p></div>
+        </article>
+        <div class="booketeer-path-arrow" aria-hidden="true"><span>→</span></div>
+        <article class="booketeer-stage">
+          <small>BOOKETEER</small>
+          <div><h3>Find what is worth marketing.</h3><span class="booketeer-stage-data">Strong scenes · characters · tropes · emotions · selling angles · hooks · hashtags</span></div>
+        </article>
+        <div class="booketeer-path-arrow" aria-hidden="true"><span>→</span></div>
+        <article class="booketeer-stage">
+          <small>MIRA</small>
+          <div><h3>Create with MIRA.</h3><p>Turn that book knowledge into on-screen text, visuals, captions, and campaigns.</p></div>
+        </article>
+      </div>
+      <div class="booketeer-choice">
+        <strong>DO I NEED IT?</strong>
+        <p><b>No.</b> Booketeer is for whole-book understanding. If you already have content—or only want to paste one scene—you can use MIRA without it.</p>
+      </div>
     </section>
 
     <section class="section bucket-section" id="buckets">
@@ -2271,6 +2406,41 @@
         });
       });
       updateStory();
+
+      const linkBooketeerMentions = () => {
+        const textNodes = [];
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+          acceptNode(node) {
+            const parent = node.parentElement;
+            if (!parent || !/\bBooketeer\b/i.test(node.nodeValue || '')) return NodeFilter.FILTER_REJECT;
+            if (parent.closest('#booketeer, a, script, style, textarea, option')) return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+          }
+        });
+
+        while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+        textNodes.forEach((node) => {
+          const fragment = document.createDocumentFragment();
+          node.nodeValue.split(/(\bBooketeer\b)/gi).forEach((part) => {
+            if (/^Booketeer$/i.test(part)) {
+              const link = document.createElement('a');
+              link.className = 'booketeer-link';
+              link.href = '#booketeer';
+              link.textContent = part;
+              fragment.appendChild(link);
+            } else {
+              fragment.appendChild(document.createTextNode(part));
+            }
+          });
+          node.replaceWith(fragment);
+        });
+
+        document.querySelectorAll('summary .booketeer-link').forEach((link) => {
+          link.addEventListener('click', (event) => event.stopPropagation());
+        });
+      };
+      linkBooketeerMentions();
 
       const sourceData = {
         own: {
