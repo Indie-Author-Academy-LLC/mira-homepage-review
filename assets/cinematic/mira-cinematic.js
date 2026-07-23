@@ -113,7 +113,6 @@
         segment.painted = true;
         segment.element.classList.add('has-painted-video');
         world.classList.add('has-cinematic-video');
-        if (segment.id === '04-run') cinematic.classList.add('has-run-video');
       }
     });
     video.addEventListener('loadeddata', () => {
