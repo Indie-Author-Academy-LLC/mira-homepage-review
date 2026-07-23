@@ -54,7 +54,6 @@
       element,
       still,
       video: null,
-      objectUrl: '',
       loading: false,
       ready: false,
       painted: false,
@@ -75,29 +74,14 @@
     return base + 'vid/' + segment.id + suffix;
   };
 
-  const enterStaticFallback = () => {
-    staticFallback = true;
-    segments.forEach((segment) => {
-      if (segment.video) {
-        try { segment.video.pause(); } catch (_) {}
-        segment.video.remove();
-      }
-      if (segment.objectUrl) URL.revokeObjectURL(segment.objectUrl);
-      segment.video = null;
-      segment.objectUrl = '';
-      segment.ready = false;
-      segment.loading = false;
-    });
-    world.classList.remove('has-cinematic-video');
-    world.classList.add('has-cinematic-fallback');
-  };
-
   const primeVideo = (video) => {
     if (!video || !isTouchLayout()) return;
     try {
       const promise = video.play();
       if (promise && promise.then) {
-        promise.then(() => video.pause()).catch(enterStaticFallback);
+        // iOS may reject a harmless priming play even for muted inline video.
+        // That is not a decode failure and must never collapse the film to posters.
+        promise.then(() => video.pause()).catch(() => {});
       }
     } catch (_) {}
   };
@@ -106,43 +90,44 @@
     if (staticFallback || segment.loading || segment.video) return;
     segment.loading = true;
 
-    fetch(clipPath(segment))
-      .then((response) => {
-        if (!response.ok) throw new Error('cinematic clip unavailable');
-        return response.blob();
-      })
-      .then((blob) => {
-        const video = document.createElement('video');
-        video.className = 'cinematic-media__video';
-        video.muted = true;
-        video.playsInline = true;
-        video.preload = 'auto';
-        video.setAttribute('muted', '');
-        video.setAttribute('playsinline', '');
+    const video = document.createElement('video');
+    video.className = 'cinematic-media__video';
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.preload = 'auto';
+    video.disablePictureInPicture = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
 
-        segment.objectUrl = URL.createObjectURL(blob);
-        video.src = segment.objectUrl;
-        video.addEventListener('loadedmetadata', () => {
-          segment.ready = true;
-          read();
-        });
-        video.addEventListener('seeked', () => {
-          if (!segment.painted) {
-            segment.painted = true;
-            segment.element.classList.add('has-painted-video');
-            world.classList.add('has-cinematic-video');
-          }
-        });
-        video.addEventListener('loadeddata', () => {
-          video.pause();
-          if (userReady) primeVideo(video);
-        });
-        segment.element.appendChild(video);
-        segment.video = video;
-      })
-      .catch(() => {
-        segment.loading = false;
-      });
+    // Direct MP4 URLs let Safari use HTTP byte ranges. Blob URLs force the
+    // phone to download entire clips and are unreliable for repeated seeking.
+    video.src = clipPath(segment);
+    video.addEventListener('loadedmetadata', () => {
+      segment.ready = true;
+      read();
+    });
+    video.addEventListener('seeked', () => {
+      if (!segment.painted) {
+        segment.painted = true;
+        segment.element.classList.add('has-painted-video');
+        world.classList.add('has-cinematic-video');
+      }
+    });
+    video.addEventListener('loadeddata', () => {
+      video.pause();
+      if (userReady) primeVideo(video);
+    });
+    video.addEventListener('error', () => {
+      segment.loading = false;
+      segment.ready = false;
+      segment.video = null;
+      video.remove();
+    }, { once: true });
+    segment.element.appendChild(video);
+    segment.video = video;
+    video.load();
   };
 
   const read = () => {
@@ -193,12 +178,6 @@
   addEventListener('resize', queueRead, { passive: true });
   addEventListener('pointerdown', onFirstGesture, { once: true, passive: true });
   addEventListener('touchstart', onFirstGesture, { once: true, passive: true });
-  addEventListener('pagehide', () => {
-    segments.forEach((segment) => {
-      if (segment.objectUrl) URL.revokeObjectURL(segment.objectUrl);
-    });
-  }, { once: true });
-
   read();
   requestAnimationFrame(animate);
 })();
