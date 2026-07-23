@@ -1828,6 +1828,7 @@
     .proof-section-v6 .section-title { max-width: 11ch; }
     .proof-section-v6 .section-lede { color: #57210e; }
     .proof-section-v6 .proof-grid {
+      grid-template-columns: minmax(10rem,.36fr) minmax(0,1.64fr);
       padding-top: 3rem;
       border-top: 1px solid rgba(28,12,5,.22);
     }
@@ -1854,7 +1855,83 @@
       letter-spacing: .11em;
     }
     .proof-starting-point span:last-child { border-right: 0; }
+    .proof-evidence-layout {
+      display: grid;
+      grid-template-columns: minmax(0,.88fr) minmax(21rem,.78fr);
+      gap: clamp(1.8rem,4vw,3.5rem);
+      align-items: start;
+    }
+    .proof-result-copy { padding-top: .2rem; }
     .proof-section-v6 .proof-note { color: #57210e; }
+    .proof-community-cta {
+      display: flex;
+      min-height: 4.3rem;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      margin-top: 1.6rem;
+      padding: .9rem 1rem;
+      border: 1px solid rgba(28,12,5,.7);
+      color: #1c0c05;
+      text-decoration: none;
+      transition: color .2s ease, background .2s ease;
+    }
+    .proof-community-cta strong {
+      display: block;
+      font-size: .9rem;
+      letter-spacing: -.01em;
+    }
+    .proof-community-cta span {
+      display: block;
+      margin-top: .22rem;
+      color: #57210e;
+      font: 700 .54rem/1.35 var(--mono);
+      letter-spacing: .045em;
+    }
+    .proof-community-cta > b {
+      font: 750 1.35rem/1 var(--mono);
+      transition: transform .2s ease;
+    }
+    .proof-community-cta:hover,
+    .proof-community-cta:focus-visible {
+      color: var(--orange);
+      background: #1c0c05;
+      outline: none;
+    }
+    .proof-community-cta:hover span,
+    .proof-community-cta:focus-visible span { color: #e5a080; }
+    .proof-community-cta:hover > b,
+    .proof-community-cta:focus-visible > b { transform: translateX(.2rem); }
+    .proof-evidence {
+      overflow: hidden;
+      margin: 0;
+      border: 1px solid rgba(28,12,5,.65);
+      background: #1c0c05;
+      box-shadow: 1.1rem 1.1rem 0 rgba(28,12,5,.12);
+    }
+    .proof-evidence > a {
+      display: block;
+      overflow: hidden;
+      background: #fff;
+    }
+    .proof-evidence img {
+      display: block;
+      width: 100%;
+      height: auto;
+      transition: transform .28s ease;
+    }
+    .proof-evidence > a:hover img,
+    .proof-evidence > a:focus-visible img { transform: scale(1.012); }
+    .proof-evidence figcaption {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .8rem .9rem;
+      color: var(--paper);
+      font: 700 .5rem/1.45 var(--mono);
+      letter-spacing: .075em;
+    }
+    .proof-evidence figcaption span { color: #c8886b; text-align: right; }
 
     .plans-section .price-clarity { margin-top: 2rem; }
     .pricing-note {
@@ -1918,6 +1995,10 @@
       .compact-questions { grid-template-columns: 1fr; }
     }
 
+    @media (max-width: 960px) {
+      .proof-section-v6 .proof-grid { grid-template-columns: 1fr; }
+    }
+
     @media (max-width: 680px) {
       .story-beat h1 { max-width: 10.5ch; }
       .story-beat[data-beat="1"] h2,
@@ -1966,6 +2047,9 @@
         border-bottom: 1px solid rgba(28,12,5,.24);
       }
       .proof-starting-point span:last-child { border-bottom: 0; }
+      .proof-evidence-layout { grid-template-columns: 1fr; }
+      .proof-evidence { box-shadow: .7rem .7rem 0 rgba(28,12,5,.12); }
+      .proof-evidence figcaption { font-size: .47rem; }
       .plan { grid-template-columns: 1fr; gap: .9rem; padding: 1.7rem 0; }
       .compact-questions h3 { font-size: clamp(3.1rem, 15vw, 4.7rem); }
       .final h2 { font-size: clamp(3.5rem, 16vw, 5.3rem); }
@@ -2261,8 +2345,22 @@
             <span>Brand-new book series</span>
             <span>A few public reviews</span>
           </div>
-          <blockquote class="proof-quote">100,000+ daily TikTok views. Kindle Top 1,000.</blockquote>
-          <p class="proof-note">One operator generated more than 100,000 daily TikTok views and reached the Kindle Top 1,000 using an expanded setup. Results vary.</p>
+          <div class="proof-evidence-layout">
+            <div class="proof-result-copy">
+              <blockquote class="proof-quote">100,000+ daily TikTok views. Kindle Top 1,000.</blockquote>
+              <p class="proof-note">One operator generated more than 100,000 daily TikTok views and reached the Kindle Top 1,000 using an expanded setup. Results vary.</p>
+              <a class="proof-community-cta" href="https://www.facebook.com/groups/gyptiktokforauthors/" target="_blank" rel="noopener noreferrer">
+                <span><strong>Join the Facebook group</strong><span>GROW YOUR PUBLISHING · FOR AUTHORS</span></span>
+                <b aria-hidden="true">→</b>
+              </a>
+            </div>
+            <figure class="proof-evidence">
+              <a href="https://www.facebook.com/groups/gyptiktokforauthors/" target="_blank" rel="noopener noreferrer" aria-label="Join the Grow Your Publishing Facebook group">
+                <img src="assets/case-study/operator-kindle-top-1000-proof-redacted.png" width="983" height="1280" loading="lazy" decoding="async" alt="Facebook post screenshot showing an Amazon Kindle Store rank of 1,000 and a rising KDP royalties estimate. The operator’s name is blurred for privacy.">
+              </a>
+              <figcaption><strong>OPERATOR SCREENSHOT · AMAZON + KDP</strong><span>CLICK TO JOIN THE GROUP</span></figcaption>
+            </figure>
+          </div>
         </div>
       </div>
     </section>
